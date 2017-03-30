@@ -1,0 +1,13 @@
+#include <asm/uaccess.h>
+#include <linux/types.h>
+#include <cmd/def.h>
+#include <cmd/protos.h>
+
+int cmd_hello_handler(struct cmd_hello_args *args, struct cmd_hello_res *res)
+{
+	pr_debug("in cmd_hello_handler\n");
+	pr_info("hello world\n");
+	pr_info("arg.val=%d\n", args->val);
+	res->val = 666;
+	return 42;
+}
