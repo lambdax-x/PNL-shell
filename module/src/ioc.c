@@ -3,7 +3,7 @@
 #include <linux/mutex.h>
 #include <ioc.h>
 #include <cmd/def.h>
-#include <cmd/protos.h>
+#include <cmd/work.h>
 
 static inline cmdid_t atomic_next_uid(void)
 {
@@ -12,8 +12,10 @@ static inline cmdid_t atomic_next_uid(void)
 	static struct mutex uid_lock;
 	cmdid_t uid;
 
-	if (unlikely(!initialized))
+	if (unlikely(!initialized)) {
 		mutex_init(&uid_lock);
+		initialized = 1;
+	}
 
 	mutex_lock(&uid_lock);
 	uid = next_uid;
@@ -24,35 +26,25 @@ static inline cmdid_t atomic_next_uid(void)
 
 long ioc(struct file *file, unsigned int seq, unsigned long addr)
 {
-	struct cmd_status status;
-	struct cmd_status *user_status;
+	struct cmd_params *params;
+	enum cmd_type type;
 	cmdid_t uid; 
 
 	uid = atomic_next_uid();
+	params = (struct cmd_params *) addr;
 
 	switch (seq)
 	{
 #define CMD(name, in, out)						\
-		case IOC_ ## name: ;{					\
-			struct cmd_ ## name ## _args args;		\
-			if(copy_from_user(&args,			\
-				(struct cmd_ ## name ## _args *) addr,	\
-				sizeof(struct cmd_##name##_args)	\
-			))						\
-				return -EFAULT;				\
-			user_status = args.status;			\
-			status.type = cmd_##name;			\
-			status.code = CMD_HANDLER(name,			\
-					&args, &status.res.name		\
-			);}						\
+		case IOC_ ## name:					\
+			type = cmd_ ## name;				\
 			break;
 		CMD_TABLE
 #undef CMD
 		default:
 			return -EINVAL;
 	}
-	if (copy_to_user(user_status, &status, sizeof(struct cmd_status)))
-		return -EFAULT;
-	return 0;
+
+	return schedule_cmd_work(uid, type, params);
 }
 

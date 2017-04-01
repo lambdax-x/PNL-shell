@@ -42,16 +42,35 @@ enum cmd_type {
  *	[type field;]
  * };
  */
-#define CMD(name, in, out)			\
-	struct cmd_## name ## _args {		\
-		int asynchronous;		\
-		struct cmd_status *status;	\
-		in				\
+#define CMD(name, in, out)						\
+	struct cmd_## name ## _args {					\
+		int asynchronous;					\
+		struct cmd_status *status;				\
+		in							\
 	};
 #define _(field) field;
 CMD_TABLE
 #undef _
 #undef CMD
+
+/* Union of possible command args:
+ * union cmd_args {
+ *	[struct cmd_"name"_args "name";]
+ * };
+ */
+union cmd_args {
+#define CMD(name, in, out) struct cmd_ ## name ## _args name;
+	CMD_TABLE
+#undef CMD
+};
+
+/* Wrapper of struct cmd_"name"_args
+ */
+struct cmd_params {
+	int asynchronous;
+	struct cmd_status *status;
+	union cmd_args args;
+};
 
 /* Command result:
  * struct cmd_"name"_res {
@@ -81,17 +100,16 @@ union cmd_res {
 /* Status of a command:
  */
 struct cmd_status {
-	enum cmd_type type;
 	int code;
 	union cmd_res res;
 };
 
-/* ioctl(fd, code, args):
+/* ioctl(fd, code, params):
  * code: IOC_"name"
- * args: struct cmd_"name"_args *
+ * params: struct cmd_params *
  */
 #define CMD(name, in, out) IOC_ ## name = \
-	_IOWR(IOC_CMD_MAGIC, cmd_ ## name, struct cmd_ ## name ## _args *),
+	_IOWR(IOC_CMD_MAGIC, cmd_ ## name, struct cmd_params*),
 enum {
 	CMD_TABLE
 	IOC_max_code

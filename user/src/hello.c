@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {
 	int fd, r;
-	struct cmd_hello_args args;
+	struct cmd_params params;
 	struct cmd_status status;
 
 	fd = open("/dev/playground", O_RDWR);
@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
 		exit(errno);
 	}
 	
-	args.asynchronous = 0;
-	args.status = &status;
-	args.val = 23;
-	r = ioctl(fd, IOC_hello, &args);
+	params.asynchronous = 0;
+	params.status = &status;
+	params.args.hello.val = 23;
+	r = ioctl(fd, IOC_hello, &params);
 	if (r == -1) {
 		perror("ioctl hello");
 		exit(errno);
