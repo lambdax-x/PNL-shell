@@ -26,7 +26,6 @@ long ioc(struct file *file, unsigned int seq, unsigned long addr)
 {
 	struct cmd_status status;
 	struct cmd_status *user_status;
-	int r;
 	cmdid_t uid; 
 
 	uid = atomic_next_uid();
@@ -36,11 +35,10 @@ long ioc(struct file *file, unsigned int seq, unsigned long addr)
 #define CMD(name, in, out)						\
 		case IOC_ ## name: ;{					\
 			struct cmd_ ## name ## _args args;		\
-			r = copy_from_user(&args,			\
+			if(copy_from_user(&args,			\
 				(struct cmd_ ## name ## _args *) addr,	\
 				sizeof(struct cmd_##name##_args)	\
-			);						\
-			if (r)						\
+			))						\
 				return -EFAULT;				\
 			user_status = args.status;			\
 			status.type = cmd_##name;			\
@@ -53,7 +51,8 @@ long ioc(struct file *file, unsigned int seq, unsigned long addr)
 		default:
 			return -EINVAL;
 	}
-	r = copy_to_user(user_status, &status, sizeof(struct cmd_status));
+	if (copy_to_user(user_status, &status, sizeof(struct cmd_status)))
+		return -EFAULT;
 	return 0;
 }
 
