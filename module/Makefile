@@ -10,8 +10,8 @@ obj-m := playground.o
 playground-y :=	src/playground.o					\
 		src/ioc.o						\
 		src/cmd/work.o						\
-		src/cmd/hello.o						\
-		src/cmd/list.o
+		src/cmd/handlers/hello.o				\
+		src/cmd/handlers/list.o
 
 else
 
