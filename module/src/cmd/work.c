@@ -7,28 +7,28 @@
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
-struct cmd_works works; 
+struct cmd_works cmd_works; 
 
 static inline void insert_work(struct cmd_work *work)
 {
 	static int initialized = 0;
 
 	if (unlikely(!initialized)) {
-		mutex_init(&works.mutex);
-		INIT_LIST_HEAD(&works.first.list);
+		mutex_init(&cmd_works.mutex);
+		INIT_LIST_HEAD(&cmd_works.first);
 		initialized = 1;
 	}
 
-	mutex_lock(&works.mutex);
-	list_add(&work->list, &works.first.list);
-	mutex_unlock(&works.mutex);
+	mutex_lock(&cmd_works.mutex);
+	list_add(&work->list, &cmd_works.first);
+	mutex_unlock(&cmd_works.mutex);
 }
 
 static inline void collect_work(struct cmd_work *work)
 {
-	mutex_lock(&works.mutex);
+	mutex_lock(&cmd_works.mutex);
 	list_del(&work->list);
-	mutex_unlock(&works.mutex);
+	mutex_unlock(&cmd_works.mutex);
 }
 
 static int exec_work(struct cmd_work *work)

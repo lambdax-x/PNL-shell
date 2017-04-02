@@ -31,6 +31,8 @@ int main(int argc, char *argv[])
 	printf("status code: %d\n", status.code);
 	printf("hello ret: %d\n", status.res.hello.val);
 
+	r = ioctl(fd, IOC_list, &params);
+
 	close(fd);
 
 	return EXIT_SUCCESS;
