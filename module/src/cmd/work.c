@@ -16,11 +16,13 @@ static inline void insert_work(struct cmd_work *work)
 	if (unlikely(!initialized)) {
 		mutex_init(&cmd_works.mutex);
 		INIT_LIST_HEAD(&cmd_works.first);
+		cmd_works.count = 0;
 		initialized = 1;
 	}
 
 	mutex_lock(&cmd_works.mutex);
 	list_add(&work->list, &cmd_works.first);
+	cmd_works.count++;
 	mutex_unlock(&cmd_works.mutex);
 }
 
@@ -28,6 +30,7 @@ static inline void collect_work(struct cmd_work *work)
 {
 	mutex_lock(&cmd_works.mutex);
 	list_del(&work->list);
+	cmd_works.count--;
 	mutex_unlock(&cmd_works.mutex);
 }
 
@@ -43,6 +46,7 @@ static int exec_work(struct cmd_work *work)
 	CMD_TABLE
 #undef CMD
 
+	work->state = work_running;
 	switch (work->type) {
 #define CMD(name, in, out)						\
 		case cmd_ ## name:					\
@@ -58,7 +62,7 @@ static int exec_work(struct cmd_work *work)
 			return -EINVAL;
 #undef CMD
 	};
-
+	work->state = work_terminated;
 	work->status.code = code;
 	return 0;
 }
@@ -75,6 +79,7 @@ int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 
 	work->uid = uid;
 	work->type = type;
+	work->state = work_registered;
 	if (copy_from_user(&work->params, user_params_addr,
 				sizeof(struct cmd_params))) {
 		kfree(work);

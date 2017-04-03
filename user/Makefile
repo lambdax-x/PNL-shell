@@ -8,7 +8,7 @@ BIN=bin
 
 .PHONY: mkdirs clean distclean
 
-all: mkdirs $(BIN)/hello
+all: mkdirs $(BIN)/tests
 
 mkdirs:
 	- mkdir $(OBJ) $(BIN)

@@ -18,7 +18,7 @@ typedef unsigned int cmdid_t;
 	)								\
 									\
 	CMD(list							\
-	, _(cmdid_t *cmd)						\
+	, _(cmdid_t *uid) _(size_t size)				\
 	, _(size_t size)						\
 	)
 
