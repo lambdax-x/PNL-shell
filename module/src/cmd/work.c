@@ -67,6 +67,14 @@ static int exec_work(struct cmd_work *work)
 	return 0;
 }
 
+static void work_async_handler(struct work_struct *ws)
+{
+	struct cmd_work *work;
+	
+	work = container_of(ws, struct cmd_work, ws);
+	exec_work(work);
+}
+
 int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 		const struct cmd_params *user_params_addr)
 {
@@ -88,9 +96,8 @@ int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 	insert_work(work);
 
 	if (work->params.asynchronous) {
-		/* asynchronous scheduling is not implemented yet
-		 */
-		return -EINVAL;
+		INIT_WORK(&work->ws, work_async_handler);
+		return 0;
 	}
 	
 	r = exec_work(work);
