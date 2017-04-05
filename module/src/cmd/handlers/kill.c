@@ -11,14 +11,16 @@
 int cmd_kill_handler(struct cmd_kill_args *args, struct cmd_kill_res *res){
 
         struct pid *p;
-        pr_debug("begin of cmd_modinfo_handler\n");
+        pr_debug("begin of cmd_kill_handler\n");
         p = find_get_pid(args->pid);
         if (!p) {
                 pr_debug("[KILL] PID NOT FOUND \n");
                 goto ending;
         }
-        kill_pid(p, args->sig, 1);
-        put_pid(p);
+        pr_debug("kill %d with %d\n",args->pid, args->sig);
+	kill_pid(p, args->sig, 1);
+        
+	put_pid(p);
         res->status = 0;
         return 0;
 ending:

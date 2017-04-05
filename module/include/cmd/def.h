@@ -27,14 +27,9 @@ typedef unsigned int cmdid_t;
 	, _(int status)							\
 	)								\
 									\
-	CMD(meminfo							\
-	,								\
-	, _(int val)							\
-	)								\
-									\
 	CMD(modinfo							\
 	, _(char *name)							\
-	, _(char *info)							\
+	, _(char info[512])						\
 	)
 /* Command identifier:
  * enum cmd_type {
