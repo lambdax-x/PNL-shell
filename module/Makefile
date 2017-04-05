@@ -11,8 +11,9 @@ playground-y :=	src/playground.o					\
 		src/ioc.o						\
 		src/cmd/work.o						\
 		src/cmd/handlers/hello.o				\
-		src/cmd/handlers/list.o
-
+		src/cmd/handlers/list.o					\
+		src/cmd/handlers/modinfo.o				\
+		src/cmd/handlers/kill.o
 else
 
 all:

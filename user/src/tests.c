@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <string.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -41,7 +42,7 @@ void list(int fd)
 	if (r == -1) {
 		perror("ioctl list");
 		exit(errno);
-	};
+	}
 	printf("status code: %d\n", status.code);
 	if (status.code < 0) {
 		printf("error\n");
@@ -50,6 +51,29 @@ void list(int fd)
 	printf("%u commands:\n", status.res.list.size);
 	for (unsigned int i = 0 ; i < status.res.list.size ; ++i)
 		printf("uid=%u\n", uid[i]);
+}
+
+void modinfo(int fd, char *name){
+
+	struct cmd_params params;
+	struct cmd_status status;
+	int result;
+	int r;
+	params.asynchronous = 0;
+	params.status = &status;
+	params.args.modinfo.name = malloc(sizeof(char)*strlen(name));
+	strcpy(params.args.modinfo.name,name);
+	result = ioctl(fd, IOC_modinfo, &params);
+	if ( r == -1 ) {
+		perror("ioctl modinfo");
+		exit(errno);
+	}
+	printf("status code: %d\n", status.code);
+	if ( status.code < 0 ){
+		printf("error\n");
+		exit(status.code);
+	}
+	printf("result : %s\n", status.res.modinfo.info);
 }
 
 int main(int argc, char *argv[])
@@ -62,6 +86,7 @@ int main(int argc, char *argv[])
 	}
 	hello(fd);
 	list(fd);
+	modinfo(fd,"helloWorld");
 	close(fd);
 
 	return EXIT_SUCCESS;

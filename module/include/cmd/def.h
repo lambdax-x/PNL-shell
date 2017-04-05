@@ -20,8 +20,22 @@ typedef unsigned int cmdid_t;
 	CMD(list							\
 	, _(cmdid_t *uid) _(size_t size)				\
 	, _(size_t size)						\
+	)								\
+									\
+	CMD(kill							\
+	, _(int sig) _(int pid)						\
+	, _(int status)							\
+	)								\
+									\
+	CMD(meminfo							\
+	,								\
+	, _(int val)							\
+	)								\
+									\
+	CMD(modinfo							\
+	, _(char *name)							\
+	, _(char *info)							\
 	)
-
 /* Command identifier:
  * enum cmd_type {
  *	cmd_"name"
