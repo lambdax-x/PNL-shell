@@ -30,7 +30,13 @@ typedef unsigned int cmdid_t;
 	CMD(modinfo							\
 	, _(char *name)							\
 	, _(char info[512])						\
+	)								\
+									\
+	CMD(meminfo							\
+	, _(struct sysinfo *info) 					\
+	, _(int val)							\
 	)
+	
 /* Command identifier:
  * enum cmd_type {
  *	cmd_"name"

@@ -10,6 +10,7 @@
 #include <readline/history.h>
 #include <cmd/def.h>
 #include <sys/wait.h>
+#include <sys/sysinfo.h>
 
 #define TRUE 1
 #define TAILLE 256
@@ -102,6 +103,35 @@ void kill_fct(int fd, char **args, int async){
 		exit(status.code);
 	}
 	printf("[KILL] command : %d\n",status.res.kill.status);
+}
+
+void meminfo_fct(int fd, int async){
+
+	struct cmd_params 	params;
+	struct cmd_status 	status;
+	struct sysinfo		info;
+	int 			result;
+
+	params.asynchronous = async;
+	params.status = &status;
+	params.args.meminfo.info = &info;
+	result = ioctl(fd, IOC_meminfo, &params);
+	if ( result == -1 ) {
+		perror("ioctl meminfo");
+		exit(errno);
+	}
+	
+	if( status.code == 0){
+		printf("[MEMINFO] MemTotal:	  %8lu kB\n", info.totalram);	
+		printf("[MEMINFO] MemFree:	  %8lu kB\n", info.freeram);	
+		printf("[MEMINFO] Buffers:	  %8lu kB\n", info.bufferram);	
+		printf("[MEMINFO] HighTotal:	  %8lu kB\n", info.totalhigh);	
+		printf("[MEMINFO] FreeHigh:	  %8lu kB\n", info.freehigh);
+		printf("[MEMINFO] SwapTotal:	  %8lu kB\n", info.totalswap);
+		printf("[MEMINFO] SwapFree:	  %8lu kB\n", info.freeswap);
+		printf("[MEMINFO] SharedMem:	  %8lu kB\n", info.sharedram);
+		printf("[MEMINFO] Memory unit:	  %8lu kB\n", info.mem_unit);
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -204,6 +234,7 @@ int main(int argc, char *argv[]) {
 			if(!strcmp(CMD, "meminfo")){
 				unknown = 0;
 				printf("inside meminfo\n");
+				meminfo_fct(fd,0);
 			}
 			if(!strcmp(CMD, "modinfo")){
 				unknown = 0;

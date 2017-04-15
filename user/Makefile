@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-std=gnu11 -I$(MDIR)/include
-LDFLAGS=-static
+LDFLAGS= -lreadline
 
 SRC=src
 OBJ=obj
@@ -8,7 +8,7 @@ BIN=bin
 
 .PHONY: mkdirs clean distclean
 
-all: mkdirs $(BIN)/tests
+all: mkdirs $(BIN)/tests $(BIN)/cmd2
 
 mkdirs:
 	- mkdir $(OBJ) $(BIN)
