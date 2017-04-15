@@ -2,7 +2,9 @@ ifneq ($(KERNELRELEASE),)
 
 ccflags-y :=	-I$M/include						\
 		-std=gnu11						\
-		-Werror -Wno-declaration-after-statement		\
+		-Werror							\
+		-Wno-declaration-after-statement			\
+		-Wno-strict-prototypes					\
 		-Wno-unused-function					\
 		-DDEBUG
 
@@ -11,7 +13,8 @@ playground-y :=	src/playground.o					\
 		src/ioc.o						\
 		src/cmd/work.o						\
 		src/cmd/handlers/hello.o				\
-		src/cmd/handlers/list.o
+		src/cmd/handlers/sleep.o				\
+		src/cmd/handlers/fg.o
 
 else
 

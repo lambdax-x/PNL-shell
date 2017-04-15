@@ -1,6 +1,8 @@
 #ifndef IOCTL_H
 #define IOCTL_H
 
+#include <linux/types.h>
+
 #define IOC_CMD_MAGIC 'N'
 typedef unsigned int cmdid_t;
 
@@ -17,9 +19,14 @@ typedef unsigned int cmdid_t;
 	, _(int val)							\
 	)								\
 									\
-	CMD(list							\
-	, _(cmdid_t *uid) _(size_t size)				\
-	, _(size_t size)						\
+	CMD(sleep							\
+	, _(unsigned int seconds)					\
+	,								\
+	)								\
+									\
+	CMD(fg								\
+	, _(cmdid_t uid) _(struct cmd_status *status)			\
+	, _(int code)							\
 	)
 
 /* Command identifier:
@@ -44,8 +51,6 @@ enum cmd_type {
  */
 #define CMD(name, in, out)						\
 	struct cmd_## name ## _args {					\
-		int asynchronous;					\
-		struct cmd_status *status;				\
 		in							\
 	};
 #define _(field) field;
@@ -77,9 +82,9 @@ struct cmd_params {
  *	[type field;]
  * };
  */
-#define CMD(name, in, out)		\
-	struct cmd_## name ## _res {	\
-		out			\
+#define CMD(name, in, out)						\
+	struct cmd_## name ## _res {					\
+		out							\
 	};
 #define _(field) field;
 CMD_TABLE

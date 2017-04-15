@@ -1,113 +1,143 @@
-#include <linux/types.h>
 #include <linux/mutex.h>
-#include <linux/workqueue.h>
 #include <linux/slab.h>
+#include <linux/sched.h>
 #include <asm/uaccess.h>
 #include <cmd/def.h>
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
-struct cmd_works cmd_works; 
+LIST_HEAD(works_list);
+DEFINE_MUTEX(works_lock);
+
+void lock_cmd_works()
+{
+	mutex_lock(&works_lock);
+}
+
+void unlock_cmd_works()
+{
+	mutex_unlock(&works_lock);
+}
 
 static inline void insert_work(struct cmd_work *work)
 {
-	static int initialized = 0;
-
-	if (unlikely(!initialized)) {
-		mutex_init(&cmd_works.mutex);
-		INIT_LIST_HEAD(&cmd_works.first);
-		cmd_works.count = 0;
-		initialized = 1;
-	}
-
-	mutex_lock(&cmd_works.mutex);
-	list_add(&work->list, &cmd_works.first);
-	cmd_works.count++;
-	mutex_unlock(&cmd_works.mutex);
+	lock_cmd_works();
+	list_add(&work->list, &works_list);
+	unlock_cmd_works();
+	pr_debug("command %u inserted\n", work->uid);
 }
 
-static inline void collect_work(struct cmd_work *work)
+static inline void clean_work_unsafe(struct kref *kref)
 {
-	mutex_lock(&cmd_works.mutex);
+	struct cmd_work *work = container_of(kref, struct cmd_work, cleaners);
+	pr_debug("cleaning and freeing command %u\n", work->uid);
 	list_del(&work->list);
-	cmd_works.count--;
-	mutex_unlock(&cmd_works.mutex);
+	kfree(work);
 }
 
-static int exec_work(struct cmd_work *work)
-{
-	union cmd_args *args = &work->params.args;
-	union cmd_res *res = &work->status.res;
-	int code;
-
-#define CMD(name, in, out)						\
-	struct cmd_ ## name ## _args *name ## _args;			\
-	struct cmd_ ## name ## _res *name ## _res;
-	CMD_TABLE
-#undef CMD
-
-	work->state = work_running;
-	switch (work->type) {
-#define CMD(name, in, out)						\
-		case cmd_ ## name:					\
-			name ## _args = (struct cmd_ ## name ## _args *) &args->name;\
-			name ## _res = (struct cmd_ ## name ## _res *) &res->name;\
-			code = CMD_HANDLER(name,				\
-					name ## _args,			\
-					name ## _res			\
-			);						\
-		break;
-		CMD_TABLE
-		default:
-			return -EINVAL;
-#undef CMD
-	};
-	work->state = work_terminated;
-	work->status.code = code;
-	return 0;
-}
-
-static void work_async_handler(struct work_struct *ws)
+struct cmd_work *find_cmd_work_unsafe(const cmdid_t uid)
 {
 	struct cmd_work *work;
-	
-	work = container_of(ws, struct cmd_work, ws);
-	exec_work(work);
+	list_for_each_entry(work, &works_list, list)
+		if (work->uid == uid)
+			return work;
+	return NULL;
 }
+
+void flush_cmd_work(struct cmd_work *work)
+{
+	pr_debug("waiting for command %u to terminate\n", work->uid);
+	wait_event(work->wait_queue, work->state == work_terminated);
+	pr_debug("command %u terminated\n", work->uid);
+}
+
+void register_cmd_work_cleaner_unsafe(struct cmd_work *work)
+{
+	kref_get(&work->cleaners);
+}
+
+void unregister_cmd_work_cleaner_unsafe(struct cmd_work *work)
+{
+	kref_put(&work->cleaners, clean_work_unsafe);
+}
+
+#define _CMD_HANDLER(name) _cmd_ ## name ## _handler
+#define CMD(name, in, out)						\
+static void _CMD_HANDLER(name)(struct work_struct *ws)			\
+{									\
+	struct cmd_work *work;						\
+	union cmd_args *_args;						\
+	union cmd_res *_res;						\
+	struct cmd_ ## name ## _args *args;				\
+	struct cmd_ ## name ## _res *res;				\
+									\
+	work = container_of(ws, struct cmd_work, ws);			\
+	work->state = work_running;					\
+	_args = &work->params.args;					\
+	_res = &work->status.res;					\
+	args = (struct cmd_ ## name ## _args *) &_args->name;		\
+	res = (struct cmd_ ## name ## _res *) &_res->name;		\
+									\
+	pr_debug("starting command " #name " with uid %u\n", work->uid);\
+	work->status.code = CMD_HANDLER(name, args, res);		\
+	pr_debug("command " #name " with uid %u executed\n", work->uid);\
+	work->state = work_terminated;					\
+	wake_up(&work->wait_queue);					\
+}
+CMD_TABLE
+#undef CMD
 
 int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 		const struct cmd_params *user_params_addr)
 {
 	struct cmd_work *work;
-	int r;
 
 	work = kmalloc(sizeof(struct cmd_work), 0);
 	if (!work)
 		return -ENOMEM;
 
-	work->uid = uid;
-	work->type = type;
-	work->state = work_registered;
 	if (copy_from_user(&work->params, user_params_addr,
 				sizeof(struct cmd_params))) {
 		kfree(work);
 		return -EFAULT;
 	}
-	insert_work(work);
 
-	if (work->params.asynchronous) {
-		INIT_WORK(&work->ws, work_async_handler);
+	switch (type) {
+#define CMD(name, in, out)						\
+		case cmd_ ## name:					\
+			INIT_WORK(&work->ws, _CMD_HANDLER(name));	\
+			break;
+		CMD_TABLE
+#undef CMD
+		default:
+			kfree(work);
+			return -EINVAL;
+	}
+
+	work->uid = uid;
+	work->type = type;
+	work->state = work_registered;
+	init_waitqueue_head(&work->wait_queue);
+	if (work->params.asynchronous)
+		atomic_set(&work->cleaners.refcount, 0);
+	else
+		kref_init(&work->cleaners);
+
+	insert_work(work);
+	schedule_work(&work->ws);
+
+	if (work->params.asynchronous)
 		return 0;
-	}
 	
-	r = exec_work(work);
-	if (r == 0 && work->params.status != NULL) {
-		copy_to_user(work->params.status,
-				&work->status,
-				sizeof(struct cmd_status)
-			);
+	flush_cmd_work(work);
+	if (work->params.status != NULL) {
+		copy_to_user(&work->status,
+					work->params.status,
+					sizeof(struct cmd_status)
+				);
 	}
-	collect_work(work);
-	kfree(work);
+	lock_cmd_works();
+	unregister_cmd_work_cleaner_unsafe(work);
+	unlock_cmd_works();
 	return 0;
 }
