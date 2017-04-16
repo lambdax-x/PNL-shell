@@ -26,6 +26,7 @@ char 	shell_prompt[200];
 int 	unknown;
 char 	DATA[4*TAILLE];
 int	tube[2];
+int	async;
 
 void modinfo(int fd, char *module_name, int async){
 	struct cmd_params 	params;
@@ -134,6 +135,51 @@ void meminfo_fct(int fd, int async){
 	}
 }
 
+int numberPipes(char** array){
+    //Returns number of | in the array
+    int i=0;
+    int found;
+    found=0;
+    while (array[i]!= NULL){
+        if (strcmp( array[i],"|")==0)
+        {
+            found++;
+        }
+        i++;
+    }
+    return found;
+
+}
+
+void wait_fct(int fd, int argc, char **args, int async){
+
+	struct cmd_params 	params;
+	struct cmd_status 	status;
+	int 			result;
+
+	params.asynchronous = async;
+	params.status = &status;
+	params.args.wait.nbPid = argc;
+	params.args.wait.PIDS = malloc(sizeof(int)*argc);
+	for(int i = 0; i < argc ; i++){
+	        params.args.wait.PIDS[i] = atoi(args[i]);
+	}
+	
+	result = ioctl(fd, IOC_wait, &params);
+	if ( result == -1 ) {
+		perror("ioctl wait");
+		exit(errno);
+	}
+	printf("[WAIT] status code: %d\n", status.code);
+	if ( status.code < 0 ){
+		printf("[WAIT] error\n");
+		exit(status.code);
+	}
+	printf("[WAIT] PID : %d, VALRET : %d\n"
+	        ,status.res.wait.PID
+	        , status.res.wait.valRet);
+}
+
 int main(int argc, char *argv[]) {
 	int fd;
 
@@ -150,7 +196,7 @@ int main(int argc, char *argv[]) {
 
 	while (TRUE) {
 		unknown = 1;
-		
+		async = 0;
 		TEMP = malloc(200*sizeof(char));
 		
 		// Create prompt string from user name and current working directory.
@@ -171,15 +217,22 @@ int main(int argc, char *argv[]) {
 		//memcpy(TEMP,CMD_BRUT,strlen(CMD_BRUT));
 		strcpy(TEMP, CMD_BRUT);
 
+                printf("TEMP : %s, taille %d\n",TEMP,strlen(TEMP));
 
 		if(strlen(TEMP) != 0){	// Interprétation de la commande.
 
 
 			CMD = strtok(TEMP, "\n");
-
+			
+			//if(strchr(CMD,'&')){ async = 1;}
+			
+			CMD = strtok(TEMP, " ");        //CMD 
+			printf("CMD : %s, taille %d\n",CMD,strlen(CMD));
+			
+			
 			if(!strcmp(CMD, "list")){
 				unknown = 0;
-				list(fd,0);
+				list(fd,async);
 			}
 			if(!strcmp(CMD, "fg")){
 				unknown = 0;
@@ -201,40 +254,43 @@ int main(int argc, char *argv[]) {
 					printf("%d : %s\n", i, ARGS[i]);
 				}
 				
-				kill_fct(fd,ARGS,0); // SYNC pour le moment.
+				kill_fct(fd,ARGS,async); // SYNC pour le moment.
 			}
 			if(!strcmp(CMD, "wait")){
 				unknown = 0;
-				// Récupération du nombre de paramètres pour cette commande.
-				printf("CMD_BRUT %s\n",TEMP);
-				while ((TEMPARG = strtok(NULL, " ")) != NULL) {
-					//printf("%d : %s\n", ARGC, TEMPARG);
+				ARGC = 1;
+				printf("PASSAGE 0 \n");
+				/* On détermine le nombre d'arguments */
+				while ((TEMPARG = strtok(NULL, " "))
+				        != NULL) {
 					ARGC++;
 				}
-
-				ARGS = malloc(sizeof(char*)*ARGC);
-				//Mise en place des parémètres dans un tableau de chaine de caractères
-				int i = 0;
+				ARGS = (char**) malloc(sizeof(char*)*(ARGC+3));
+				printf("PASSAGE 1 \n");
+				//Mise en place des paramètres
 				strcpy(TEMP, CMD_BRUT);
-				TEMPARG = strtok(TEMP, " ");	//On retire le premier élement.
+				TEMPARG = strtok(TEMP, " ");	//On retire le premier élement.	
+				int i = 0;
 				while ((TEMPARG = strtok(NULL, " ")) != NULL) {
-					ARGS[i] = malloc(sizeof(TEMPARG));
-					strcpy(ARGS[i], TEMPARG);
+					ARGS[i] = strdup(TEMPARG);
 					i++;
 				}
-
-				//Mise en place et exécution 
-				for(i = 0; i< ARGC;i++){
-					printf("%d : %s\n", i, ARGS[i]);
+				ARGS[i] = NULL;
+				
+				/* APL CMD */
+				printf("PASSAGE\n");
+				wait_fct(fd,i,ARGS,async);
+				
+				for(int j=0; j<i;j++){
+				        printf("%d : %s\n",j,ARGS[j]);
+					free(ARGS[j]);	
 				}
-
-
-				printf("inside wait\n");
+				free(ARGS);
 			}
 			if(!strcmp(CMD, "meminfo")){
 				unknown = 0;
 				printf("inside meminfo\n");
-				meminfo_fct(fd,0);
+				meminfo_fct(fd,async);
 			}
 			if(!strcmp(CMD, "modinfo")){
 				unknown = 0;
@@ -255,7 +311,7 @@ int main(int argc, char *argv[]) {
 				}
 
 
-				modinfo(fd, ARGS[0], 0);
+				modinfo(fd, ARGS[0], async);
 			}
 
 			if(!strcmp(CMD, "hello")){
@@ -266,56 +322,80 @@ int main(int argc, char *argv[]) {
 				exit(EXIT_SUCCESS);
 			}
 			//printf("unknown : %d\n",unknown);
-			if(unknown){
+			if(unknown  == 1 && async == 0 ){
 				//Exécution d'une commande classique et attente du résultat	
+				//strcpy(TEMP, CMD_BRUT);
+				int number = 0;//numberPipes(TEMP);
 				
-				ARGC = 1;
+				if(number == 0){
+					ARGC = 1;
 				
-				/* On détermine le nombre d'arguments */
-				while ((TEMPARG = strtok(NULL, " ")) != NULL) {
-					ARGC++;
-				}
+					/* On détermine le nombre d'arguments */
+					while ((TEMPARG = strtok(NULL, " "))
+					        != NULL) {
+						ARGC++;
+					}
 				
-				ARGS = (char**) malloc(sizeof(char*)*(ARGC+3));
+					ARGS = (char**) malloc(sizeof(char*)*(ARGC+3));
 				
-				//Mise en place des paramètres
-				strcpy(TEMP, CMD_BRUT);
-				TEMPARG = strtok(TEMP, " ");	//On retire le premier élement.	
+					//Mise en place des paramètres
+					strcpy(TEMP, CMD_BRUT);
+					TEMPARG = strtok(TEMP, " ");	//On retire le premier élement.	
 				
-				ARGS[0] = strdup(CMD);
-				int i = 1;
-				while ((TEMPARG = strtok(NULL, " ")) != NULL) {
-					ARGS[i] = strdup(TEMPARG);
-					i++;
-				}
-				ARGS[i] = NULL;
+				
+					ARGS[0] = strdup(CMD);
+					int i = 1;
+					while ((TEMPARG = strtok(NULL, " ")) != NULL) {
+						ARGS[i] = strdup(TEMPARG);
+						i++;
+					}
+					ARGS[i] = NULL;
 								
-				/* pipe pour le fils */
-				pipe(tube);
-				if(fork() == 0){
-					dup2(tube[1], STDOUT_FILENO);
-					dup2(tube[1], STDERR_FILENO); 
-					close(tube[0]);
+					/* pipe pour le fils */
+					pipe(tube);
+					if(fork() == 0){
+						dup2(tube[1], STDOUT_FILENO);
+						dup2(tube[1], STDERR_FILENO); 
+						close(tube[0]);
+						close(tube[1]);
+						execvp(CMD, ARGS);
+						perror("error");
+						exit(EXIT_FAILURE);
+					}
 					close(tube[1]);
-					execvp(CMD, ARGS);
-					perror("error");
-					exit(EXIT_FAILURE);
-				}
-				close(tube[1]);
-				wait(NULL); //Attente du fils
+					wait(NULL); //Attente du fils
 				
-				/* Récupération du résultat */
-				while(read(tube[0], DATA, 4*TAILLE)>0){				
-					printf("%s",DATA);
-					memset(DATA, 0, 4*TAILLE);
-				}
-				close(tube[0]);
+					/* Récupération du résultat */
+					while(read(tube[0], DATA, 4*TAILLE)>0){				
+						printf("%s",DATA);
+						memset(DATA, 0, 4*TAILLE);
+					}
+					close(tube[0]);
 				
-				/* Libération des arguments */
-				for(int j=0; j<i;j++){
-					free(ARGS[j]);	
+					/* Libération des arguments */
+					for(int j=0; j<i;j++){
+						free(ARGS[j]);	
+					}
+					free(ARGS);
+				}else{
+					
+					// A FAIRE 
+					
+					
+					
+					
 				}
-				free(ARGS);
+				
+				
+			}else if(unknown  == 1 && async == 1  ){	// Asynchronous
+			
+				printf("ASYNCHRONOUS");
+			
+				//strcpy(TEMP, CMD_BRUT);
+				//numberPipes(TEMP);
+			
+			
+			
 			}
 			
 			

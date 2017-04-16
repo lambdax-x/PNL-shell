@@ -35,8 +35,12 @@ typedef unsigned int cmdid_t;
 	CMD(meminfo							\
 	, _(struct sysinfo *info) 					\
 	, _(int val)							\
-	)
-	
+	)                                                               \
+	                                                                \
+        CMD(wait                                                        \
+	, _(int nbPid) _(int *PIDS)                                     \
+	, _(int valRet) _(int PID)                                      \
+	)                                                       
 /* Command identifier:
  * enum cmd_type {
  *	cmd_"name"

@@ -14,7 +14,8 @@ playground-y :=	src/playground.o					\
 		src/cmd/handlers/list.o					\
 		src/cmd/handlers/modinfo.o				\
 		src/cmd/handlers/meminfo.o				\
-		src/cmd/handlers/kill.o
+		src/cmd/handlers/kill.o                                 \
+		src/cmd/handlers/wait.o
 else
 
 all:
