@@ -27,6 +27,11 @@ typedef unsigned int cmdid_t;
 	CMD(fg								\
 	, _(cmdid_t uid) _(struct cmd_status *status)			\
 	, _(int code)							\
+	)								\
+									\
+	CMD(kill							\
+	, _(pid_t pid) _(int signal)					\
+	,								\
 	)
 
 /* Command identifier:
