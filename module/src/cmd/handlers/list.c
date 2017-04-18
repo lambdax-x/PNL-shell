@@ -13,6 +13,7 @@ static inline void show_cmd_work_infos(const struct cmd_work_infos *infos)
 
 int cmd_list_handler(struct cmd_list_args *args, struct cmd_list_res *res)
 {
+	__label__ _unlock;
 	struct cmd_work *work;
 	int r = 0;
 
