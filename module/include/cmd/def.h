@@ -24,6 +24,11 @@ typedef unsigned int cmdid_t;
 	,								\
 	)								\
 									\
+	CMD(list							\
+	, _(struct cmd_work_infos *infos) _(size_t n)			\
+	,								\
+	)								\
+									\
 	CMD(fg								\
 	, _(cmdid_t uid) _(struct cmd_status *status)			\
 	, _(int code)							\
@@ -32,6 +37,11 @@ typedef unsigned int cmdid_t;
 	CMD(kill							\
 	, _(pid_t pid) _(int signal)					\
 	,								\
+	)								\
+									\
+	CMD(wait							\
+	, _(pid_t *pid) _(size_t n)					\
+	, _(pid_t pid) _(int code)					\
 	)
 
 /* Command identifier:
