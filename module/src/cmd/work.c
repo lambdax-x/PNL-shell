@@ -50,7 +50,7 @@ struct cmd_work *find_cmd_work_unsafe(const cmdid_t uid)
 void flush_cmd_work(struct cmd_work *work)
 {
 	pr_debug("waiting for command %u to terminate\n", work->infos.uid);
-	wait_event(work->wait_queue, work->infos.state == work_terminated);
+	wait_event(work->wq_state, work->infos.state == work_terminated);
 	pr_debug("command %u terminated\n", work->infos.uid);
 }
 
@@ -87,7 +87,7 @@ static void _CMD_HANDLER(name)(struct work_struct *ws)			\
 	pr_debug("command " #name " with uid %u executed\n",		\
 			work->infos.uid);				\
 	work->infos.state = work_terminated;				\
-	wake_up(&work->wait_queue);					\
+	wake_up(&work->wq_state);					\
 }
 CMD_TABLE
 #undef CMD
@@ -122,7 +122,7 @@ int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 	work->infos.uid = uid;
 	work->infos.type = type;
 	work->infos.state = work_registered;
-	init_waitqueue_head(&work->wait_queue);
+	init_waitqueue_head(&work->wq_state);
 	if (work->params.asynchronous)
 		atomic_set(&work->cleaners.refcount, 0);
 	else

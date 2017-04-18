@@ -23,7 +23,8 @@ struct cmd_work {
 	struct cmd_status status;
 
 	struct work_struct ws;
-	wait_queue_head_t wait_queue;
+	wait_queue_head_t wq_state;
+
 	struct list_head list;
 
 	struct kref cleaners;
