@@ -11,11 +11,14 @@ enum work_state {
 	work_terminated
 };
 
-struct cmd_work {
+struct cmd_work_infos {
 	cmdid_t uid;
 	enum cmd_type type;
 	enum work_state state;
+};
 
+struct cmd_work {
+	struct cmd_work_infos infos;
 	struct cmd_params params;
 	struct cmd_status status;
 
@@ -25,8 +28,8 @@ struct cmd_work {
 
 	struct kref cleaners;
 };
-LIST_HEAD(works_list);
-size_t works_count = 0;
+extern struct list_head works_list;
+extern size_t works_count;
 
 int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 		const struct cmd_params *user_params_addr);

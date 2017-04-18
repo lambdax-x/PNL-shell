@@ -6,6 +6,8 @@
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
+LIST_HEAD(works_list);
+size_t works_count = 0;
 DEFINE_MUTEX(works_lock);
 
 void lock_cmd_works()
@@ -24,13 +26,13 @@ static inline void insert_work(struct cmd_work *work)
 	list_add(&work->list, &works_list);
 	works_count++;
 	unlock_cmd_works();
-	pr_debug("command %u inserted\n", work->uid);
+	pr_debug("command %u inserted\n", work->infos.uid);
 }
 
 static inline void clean_work_unsafe(struct kref *kref)
 {
 	struct cmd_work *work = container_of(kref, struct cmd_work, cleaners);
-	pr_debug("cleaning and freeing command %u\n", work->uid);
+	pr_debug("cleaning and freeing command %u\n", work->infos.uid);
 	list_del(&work->list);
 	works_count--;
 	kfree(work);
@@ -40,16 +42,16 @@ struct cmd_work *find_cmd_work_unsafe(const cmdid_t uid)
 {
 	struct cmd_work *work;
 	list_for_each_entry(work, &works_list, list)
-		if (work->uid == uid)
+		if (work->infos.uid == uid)
 			return work;
 	return NULL;
 }
 
 void flush_cmd_work(struct cmd_work *work)
 {
-	pr_debug("waiting for command %u to terminate\n", work->uid);
-	wait_event(work->wait_queue, work->state == work_terminated);
-	pr_debug("command %u terminated\n", work->uid);
+	pr_debug("waiting for command %u to terminate\n", work->infos.uid);
+	wait_event(work->wait_queue, work->infos.state == work_terminated);
+	pr_debug("command %u terminated\n", work->infos.uid);
 }
 
 void register_cmd_work_cleaner_unsafe(struct cmd_work *work)
@@ -73,16 +75,18 @@ static void _CMD_HANDLER(name)(struct work_struct *ws)			\
 	struct cmd_ ## name ## _res *res;				\
 									\
 	work = container_of(ws, struct cmd_work, ws);			\
-	work->state = work_running;					\
+	work->infos.state = work_running;				\
 	_args = &work->params.args;					\
 	_res = &work->status.res;					\
 	args = (struct cmd_ ## name ## _args *) &_args->name;		\
 	res = (struct cmd_ ## name ## _res *) &_res->name;		\
 									\
-	pr_debug("starting command " #name " with uid %u\n", work->uid);\
+	pr_debug("starting command " #name " with uid %u\n",		\
+			work->infos.uid);				\
 	work->status.code = CMD_HANDLER(name, args, res);		\
-	pr_debug("command " #name " with uid %u executed\n", work->uid);\
-	work->state = work_terminated;					\
+	pr_debug("command " #name " with uid %u executed\n",		\
+			work->infos.uid);				\
+	work->infos.state = work_terminated;				\
 	wake_up(&work->wait_queue);					\
 }
 CMD_TABLE
@@ -115,9 +119,9 @@ int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 			return -EINVAL;
 	}
 
-	work->uid = uid;
-	work->type = type;
-	work->state = work_registered;
+	work->infos.uid = uid;
+	work->infos.type = type;
+	work->infos.state = work_registered;
 	init_waitqueue_head(&work->wait_queue);
 	if (work->params.asynchronous)
 		atomic_set(&work->cleaners.refcount, 0);
