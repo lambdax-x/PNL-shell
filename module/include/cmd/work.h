@@ -25,6 +25,8 @@ struct cmd_work {
 
 	struct kref cleaners;
 };
+LIST_HEAD(works_list);
+size_t works_count = 0;
 
 int schedule_cmd_work(const cmdid_t uid, const enum cmd_type type,
 		const struct cmd_params *user_params_addr);

@@ -6,7 +6,6 @@
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
-LIST_HEAD(works_list);
 DEFINE_MUTEX(works_lock);
 
 void lock_cmd_works()
@@ -23,6 +22,7 @@ static inline void insert_work(struct cmd_work *work)
 {
 	lock_cmd_works();
 	list_add(&work->list, &works_list);
+	works_count++;
 	unlock_cmd_works();
 	pr_debug("command %u inserted\n", work->uid);
 }
@@ -32,6 +32,7 @@ static inline void clean_work_unsafe(struct kref *kref)
 	struct cmd_work *work = container_of(kref, struct cmd_work, cleaners);
 	pr_debug("cleaning and freeing command %u\n", work->uid);
 	list_del(&work->list);
+	works_count--;
 	kfree(work);
 }
 
