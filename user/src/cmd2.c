@@ -37,20 +37,27 @@ void modinfo(int fd, char *module_name, int async){
 
 	params.asynchronous = async;
 	params.status = &status;
+	/* Mise en place + allocation */
 	params.args.modinfo.name = malloc(sizeof(char)*strlen(module_name));
+	params.args.modinfo.sizeName = strlen(module_name);
+	params.args.modinfo.result = malloc(sizeof(char)*512);
+	params.args.modinfo.sizeRes = 512;
+	
 	strcpy(params.args.modinfo.name,module_name);
+	
 	printf("[MODINFO] Nom du module : %s\n",params.args.modinfo.name);
 	result = ioctl(fd, IOC_modinfo, &params);
 	if ( result == -1 ) {
 		perror("ioctl modinfo");
-		exit(errno);
+		//exit(errno);
 	}
 	printf("[MODINFO] status code: %d\n", status.code);
 	if ( status.code < 0 ){
 		printf("error\n");
-		exit(status.code);
+		return;
 	}
-	printf("[MODINFO] result : %s\n",status.res.modinfo.info);
+	printf("[MODINFO]\n");
+	printf("%s",params.args.modinfo.result);
 
 }
 
@@ -126,8 +133,8 @@ void meminfo_fct(int fd, int async){
 		printf("[MEMINFO] MemTotal:	  %8lu kB\n", info.totalram);	
 		printf("[MEMINFO] MemFree:	  %8lu kB\n", info.freeram);	
 		printf("[MEMINFO] Buffers:	  %8lu kB\n", info.bufferram);	
-		printf("[MEMINFO] HighTotal:	  %8lu kB\n", info.totalhigh);	
-		printf("[MEMINFO] FreeHigh:	  %8lu kB\n", info.freehigh);
+		//printf("[MEMINFO] HighTotal:	  %8lu kB\n", info.totalhigh);	
+		//printf("[MEMINFO] FreeHigh:	  %8lu kB\n", info.freehigh);
 		printf("[MEMINFO] SwapTotal:	  %8lu kB\n", info.totalswap);
 		printf("[MEMINFO] SwapFree:	  %8lu kB\n", info.freeswap);
 		printf("[MEMINFO] SharedMem:	  %8lu kB\n", info.sharedram);

@@ -5,5 +5,6 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Playground module");
 MODULE_AUTHOR("");
 MODULE_AUTHOR("");
+MODULE_VERSION("1:0.0");
 
 #endif

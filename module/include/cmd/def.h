@@ -28,8 +28,8 @@ typedef unsigned int cmdid_t;
 	)								\
 									\
 	CMD(modinfo							\
-	, _(char *name)							\
-	, _(char info[512])						\
+	, _(char *name) _(int sizeName) _(char *result) _(int sizeRes)	\
+	, _(int code)	                                        	\
 	)								\
 									\
 	CMD(meminfo							\

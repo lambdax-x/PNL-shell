@@ -17,21 +17,30 @@
  */
 int cmd_meminfo_handler(struct cmd_meminfo_args *args, struct cmd_meminfo_res *res){
 
-	si_meminfo(args->info);
-	si_swapinfo(args->info);
+        struct sysinfo *tmp;
+        tmp = kmalloc(sizeof(struct sysinfo),GFP_KERNEL);
+        //args->info
+	si_meminfo(tmp);
+	si_swapinfo(tmp);
 	
 	/* convert to KB */ 
-	args->info->totalram = K(args->info->totalram);
-	args->info->freeram = K(args->info->freeram);
-	args->info->bufferram = K(args->info->bufferram);
-	args->info->totalhigh = K(args->info->totalhigh);
-	args->info->freehigh = K(args->info->freehigh);
-	args->info->totalswap = K(args->info->totalswap);
-	args->info->freeswap = K(args->info->freeswap);
-	args->info->sharedram = K(args->info->sharedram);
-	args->info->mem_unit = K(args->info->mem_unit);
+	tmp->totalram = K(tmp->totalram);
+	tmp->freeram = K(tmp->freeram);
+	tmp->bufferram = K(tmp->bufferram);
+	tmp->totalhigh = K(tmp->totalhigh);
+	tmp->freehigh = K(tmp->freehigh);
+	tmp->totalswap = K(tmp->totalswap);
+	tmp->freeswap = K(tmp->freeswap);
+	tmp->sharedram = K(tmp->sharedram);
+	tmp->mem_unit = K(tmp->mem_unit);
 	
 	//si_swapinfo(args->info);
 	res->val = 0;
+	
+	if(copy_to_user(args->info,tmp,sizeof(struct sysinfo)) != 0){
+		pr_debug("ERROR COPY");
+		return EFAULT;
+	}
+	
        	return 0;
 }

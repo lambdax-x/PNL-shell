@@ -12,33 +12,57 @@
 int cmd_modinfo_handler(struct cmd_modinfo_args *args, struct cmd_modinfo_res *res){
 
         struct module *mod;
-        char name[255];
+        char *name_of_module;
 	char tmp[512];
 	pr_debug("begin of cmd_modinfo_handler\n");
-	//pr_debug("%s\n",args->name);
-        strcpy(name,args->name);
-	name[strlen(name)-1] = 0;
-	//pr_debug("NAME : %s\n",name);
-	//pr_debug("LENGTH : %d \n",(int)strlen(name));
-	mod = find_module(name);
-	//pr_debug("ADDR %p\n",mod);
+	pr_info("size : %d\n",args->sizeName);
+	
+	name_of_module = kmalloc(sizeof(char)*(args->sizeName), GFP_KERNEL);
+	if (copy_from_user(name_of_module, args->name, args->sizeName) != 0)
+                return -EFAULT;
+                
+	name_of_module[args->sizeName] = 0;
+	mod = find_module(name_of_module);
+
         if ( mod != NULL ) {
                 //find the parameters
                 if ( mod->modinfo_attrs->attr.name != NULL ) {
-                       // pr_debug("ATTR : %s\n",mod->modinfo_attrs->attr.name);
-			scnprintf(tmp,512,"%s | %s | %s | %p",
-			        mod->name, mod->version, mod->modinfo_attrs->attr.name, &mod);
-			//pr_debug("FIN scnprintf\n");
-			strcpy(res->info,tmp);
+                       
+		       scnprintf(tmp,512,"name           : %s\n",mod->name);
+		       scnprintf(tmp,512,"%sversion        : %s\n",
+		                 tmp,mod->version);
+		       scnprintf(tmp,512,"%sload address   : %p\n",
+		                 tmp,&mod);
+		       scnprintf(tmp,512,"%snumber param   : %d\n",
+		                 tmp,mod->num_kp);
+			       
+			for(int i = 0; i< mod->num_kp; i++){
+			        scnprintf(tmp,512,
+			                "%s"
+			                "param %d        : %s\n"
+			                ,tmp
+			                ,i
+			                ,mod->kp[i].name);
+			              
+			}
+						
+			if(args->sizeRes <= strlen(tmp)){
+			        pr_debug("ERROR TAILLE, %d, %d",args->sizeRes,(int)strlen(tmp));
+			        goto error;
+			}else{
+			        if(copy_to_user(args->result,tmp
+			                ,args->sizeRes) != 0){
+			                 goto error;
+			        }
+			}
+			
 			return 0;
 		}
-		scnprintf(res->info, 512, "%s / %s / %p \n", mod->name,mod->version, &mod);
-               // pr_debug("%s\n",res->info);
         }else{
-                pr_debug("no module with this name.");
-            	    return -1;
+                goto error;
         }
-
-
-        return 0;
+  
+error:
+        kfree(name_of_module);
+        return -1;
 }
