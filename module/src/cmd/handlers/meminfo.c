@@ -23,7 +23,7 @@ int cmd_meminfo_handler(struct cmd_meminfo_args *args, struct cmd_meminfo_res *r
 	si_meminfo(tmp);
 	si_swapinfo(tmp);
 	
-	/* convert to KB */ 
+	/* convert to KB*/ 
 	tmp->totalram = K(tmp->totalram);
 	tmp->freeram = K(tmp->freeram);
 	tmp->bufferram = K(tmp->bufferram);

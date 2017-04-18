@@ -51,7 +51,7 @@ void modinfo(int fd, char *module_name, int async){
 		perror("ioctl modinfo");
 		//exit(errno);
 	}
-	printf("[MODINFO] status code: %d\n", status.code);
+	printf("[MODINFO] Status code: %d\n", status.code);
 	if ( status.code < 0 ){
 		printf("error\n");
 		return;

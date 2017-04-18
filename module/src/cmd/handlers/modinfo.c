@@ -7,7 +7,7 @@
 #include <linux/module.h>
 #include <linux/kobject.h>
 /**
- * gives information about a module
+ * gives information about a module 
  */
 int cmd_modinfo_handler(struct cmd_modinfo_args *args, struct cmd_modinfo_res *res){
 
