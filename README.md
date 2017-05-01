@@ -1,4 +1,4 @@
-# Do no use this Linux module
+# Do no use this Linux module
 
 ## About this project
 
@@ -7,10 +7,10 @@ the kernel, from userspace.
 
 ## Features
 
-- [x] generic implementation of commands (see documentation)
-- [x] synchronous execution using wait queues
+- [x] generic implementation of commands (see documentation)
+- [x] synchronous execution using wait queues
 - [x] asynchronous execution
-- [ ] slab allocator
+- [ ] slab allocator
 - [x] user program (shell) interfacing the module
 
 Implemented commands:
