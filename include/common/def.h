@@ -1,10 +1,9 @@
-#ifndef IOCTL_H
-#define IOCTL_H
+#ifndef COMMON_DEF_H
+#define COMMON_DEF_H
 
 #include <linux/types.h>
 
-#define IOC_CMD_MAGIC 'N'
-typedef unsigned int cmdid_t;
+typedef unsigned int workid_t;
 
 /* Definition of commands:
  * CMD(name
@@ -25,37 +24,36 @@ typedef unsigned int cmdid_t;
 	)								\
 									\
 	CMD(list							\
-	, _(struct cmd_work_infos *infos) _(size_t n)			\
+	, _(struct work_infos *infos) _(size_t size)			\
 	,								\
 	)								\
 									\
 	CMD(fg								\
-	, _(cmdid_t uid) _(struct cmd_status *status)			\
-	, _(int code)							\
+	, _(workid_t uid) _(struct cmd_status *status)			\
+	, _(int code)				\
 	)								\
+									\
 									\
 	CMD(kill							\
-	, _(pid_t pid) _(int signal)					\
+	, _(int signal) _(pid_t pid)					\
 	,								\
-	)								\
-									\
-	CMD(wait							\
-	, _(pid_t *pid) _(size_t n)					\
-	, _(pid_t pid) _(int code)					\
 	)
 
+#define CMD_TYPE(name) cmd_ ## name
 /* Command identifier:
- * enum cmd_type {
+ * enum cmd_type_t {
+ *	invalid_cmd,
  *	cmd_"name"
  *	...
  *	cmd_max_type
  */
-#define CMD(name, in, out) cmd_ ## name,
-enum cmd_type {
+enum cmd_type_t {
+	invalid_cmd,
+#define CMD(name, in, out) CMD_TYPE(name),
 	CMD_TABLE
+#undef CMD
 	cmd_max_type
 };
-#undef CMD
 
 /* Command specific arguments:
  * struct cmd_"name"_args {
@@ -64,8 +62,9 @@ enum cmd_type {
  *	[type field;]
  * };
  */
+#define CMD_ARGS(name) cmd_ ## name ## _args
 #define CMD(name, in, out)						\
-	struct cmd_## name ## _args {					\
+	struct CMD_ARGS(name) {						\
 		in							\
 	};
 #define _(field) field;
@@ -79,7 +78,7 @@ CMD_TABLE
  * };
  */
 union cmd_args {
-#define CMD(name, in, out) struct cmd_ ## name ## _args name;
+#define CMD(name, in, out) struct CMD_ARGS(name) name;
 	CMD_TABLE
 #undef CMD
 };
@@ -87,6 +86,7 @@ union cmd_args {
 /* Wrapper of struct cmd_"name"_args
  */
 struct cmd_params {
+	enum cmd_type_t type;
 	int asynchronous;
 	struct cmd_status *status;
 	union cmd_args args;
@@ -97,8 +97,9 @@ struct cmd_params {
  *	[type field;]
  * };
  */
+#define CMD_RES(name) cmd_ ## name ## _res
 #define CMD(name, in, out)						\
-	struct cmd_## name ## _res {					\
+	struct CMD_RES(name) {						\
 		out							\
 	};
 #define _(field) field;
@@ -111,7 +112,7 @@ CMD_TABLE
  *	[struct cmd_"name"_res "name";]
  * };
  */
-#define CMD(name, in, out) struct cmd_ ## name ## _res name;
+#define CMD(name, in, out) struct CMD_RES(name) name;
 union cmd_res {
 	CMD_TABLE
 };
@@ -123,17 +124,5 @@ struct cmd_status {
 	int code;
 	union cmd_res res;
 };
-
-/* ioctl(fd, code, params):
- * code: IOC_"name"
- * params: struct cmd_params *
- */
-#define CMD(name, in, out) IOC_ ## name = \
-	_IOWR(IOC_CMD_MAGIC, cmd_ ## name, struct cmd_params*),
-enum {
-	CMD_TABLE
-	IOC_max_code
-};
-#undef CMD
 
 #endif

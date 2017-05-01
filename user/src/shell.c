@@ -1,0 +1,93 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <utils/io.h>
+#include <utils/parse.h>
+#include <cmd/parse.h>
+#include <cmd/exec.h>
+
+#define PROMPT "λ. "
+#define DEVICE "/dev/playground"
+
+int open_io_dev();
+int close_io_dev(const int fd);
+
+int main(int argc, char *argv[])
+{
+	__label__ _loop, _free, _out;
+	
+	enum cmd_type_t type;
+	struct cmd_params params;
+	struct cmd_status status;
+	ssize_t read;
+	size_t length, count;
+	char *line = NULL;
+	int fd;
+
+	fd = open_io_dev();
+
+	params.status = &status;
+_loop:
+	line = readline(PROMPT);
+	if (line == NULL)
+		goto _out;
+	length = strlen(line);
+	if (length == 0)
+		goto _free;
+	add_history(line);
+	count = 0;
+
+	params.asynchronous = 0;
+	read = parse_command(line, length, &params);
+	if (read <= 0) {
+		pr_error("invalid command");
+		goto _free;
+	}
+	count += read;
+
+	read = parse_many_space(line + count, length);
+	if (count + read != length) {
+		pr_error("'%s' has not been consumed", line + count);
+		goto _free;
+	}
+
+	int r = exec_cmd(fd, &params);
+	if (r != 0) {
+		pr_error("oops, something went wrong");
+		goto _free;
+	}
+
+_free:
+	free(line);
+	line = NULL;
+	goto _loop;
+_out:
+	close_io_dev(fd);
+	return EXIT_SUCCESS;
+}
+
+int open_io_dev()
+{
+	int fd;
+
+	fd = open(DEVICE, O_RDWR);
+	if (fd == -1) {
+		perror("open");
+		exit(errno);
+	}
+
+	return fd;
+}
+
+int close_io_dev(const int fd)
+{
+	if (close(fd) != 0) {
+		perror("close");
+		exit(errno);
+	}
+}

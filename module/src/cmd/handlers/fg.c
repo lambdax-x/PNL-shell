@@ -1,5 +1,6 @@
 #include <asm/uaccess.h>
-#include <cmd/def.h>
+#include <common/def.h>
+#include <common/work.h>
 #include <cmd/protos.h>
 #include <cmd/work.h>
 
@@ -20,8 +21,8 @@ int cmd_fg_handler(struct cmd_fg_args *args, struct cmd_fg_res *res)
 
 	flush_cmd_work(work);
 	if (args->status != NULL) {
-		r = copy_to_user(&work->status,
-					args->status,
+		r = copy_to_user(args->status,
+					&work->status,
 					sizeof(struct cmd_status)
 				);
 		if (r)

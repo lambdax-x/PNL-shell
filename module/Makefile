@@ -1,6 +1,7 @@
 ifneq ($(KERNELRELEASE),)
 
-ccflags-y :=	-I$M/include						\
+ccflags-y :=	-I$(M)/include						\
+		-I$(COMMON)						\
 		-std=gnu11						\
 		-Werror							\
 		-Wno-declaration-after-statement			\
@@ -9,15 +10,14 @@ ccflags-y :=	-I$M/include						\
 		-DDEBUG
 
 obj-m := playground.o
+
+cmds := hello sleep list fg kill
+cmd-objs := $(addprefix src/cmd/handlers/,$(addsuffix .o,$(cmds)))
+
 playground-y :=	src/playground.o					\
 		src/ioc.o						\
 		src/cmd/work.o						\
-		src/cmd/handlers/hello.o				\
-		src/cmd/handlers/sleep.o				\
-		src/cmd/handlers/list.o					\
-		src/cmd/handlers/fg.o					\
-		src/cmd/handlers/kill.o
-
+		$(cmd-objs)
 else
 
 all:

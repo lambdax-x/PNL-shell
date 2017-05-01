@@ -1,6 +1,6 @@
 #include <linux/sched.h>
 #include <asm/uaccess.h>
-#include <cmd/def.h>
+#include <common/def.h>
 #include <cmd/protos.h>
 
 int cmd_kill_handler(struct cmd_kill_args *args, struct cmd_kill_res *res)

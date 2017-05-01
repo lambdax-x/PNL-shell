@@ -7,7 +7,7 @@
 #include <sys/ioctl.h>
 #include <cmd/def.h>
 
-void hello(int fd)
+void hello_cmd(int fd)
 {
 	struct cmd_params params;
 	struct cmd_status status;
@@ -15,41 +15,60 @@ void hello(int fd)
 
 	params.asynchronous = 0;
 	params.status = &status;
-	params.args.hello.val = 23;
+	params.args.hello.val = 666;
 	r = ioctl(fd, IOC_hello, &params);
-	if (r == -1) {
+	if (r != 0) {
+		perror("ioctl hello");
+		exit(errno);
+	}
+}
+
+void hello_cmd_async(int fd)
+{
+	struct cmd_params params;
+	struct cmd_status fg_status;
+	struct cmd_status hello_status;
+	int r;
+
+	params.asynchronous = 1;
+	params.status = NULL;
+	params.args.hello.val = 666;
+	r = ioctl(fd, IOC_hello, &params);
+	if (r != 0) {
 		perror("ioctl hello");
 		exit(errno);
 	}
 
-	printf("status code: %d\n", status.code);
-	printf("hello ret: %d\n", status.res.hello.val);
+	params.asynchronous = 0;
+	params.status = &fg_status;
+	params.args.fg.uid = 0;
+	params.args.fg.status = &hello_status;
+	r = ioctl(fd, IOC_fg, &params);
+	if (r != 0) {
+		perror("ioctl fg");
+		exit(errno);
+	}
+	if (fg_status.code != 0) {
+		printf("command fg");
+		exit(fg_status.code);
+	}
+	printf("%d\n", hello_status.res.hello.val);
 }
 
-void list(int fd)
+void sleep_cmd(int fd)
 {
 	struct cmd_params params;
 	struct cmd_status status;
-	cmdid_t uid[10];
 	int r;
 
-	params.asynchronous = 0;
-	params.status = &status;
-	params.args.list.uid = uid;
-	params.args.list.size = 10;
-	r = ioctl(fd, IOC_list, &params);
-	if (r == -1) {
-		perror("ioctl list");
+	params.asynchronous = 1;
+	params.status = NULL;
+	params.args.sleep.seconds = 8;
+	r = ioctl(fd, IOC_sleep, &params);
+	if (r != 0) {
+		perror("ioctl sleep");
 		exit(errno);
-	};
-	printf("status code: %d\n", status.code);
-	if (status.code < 0) {
-		printf("error\n");
-		exit(status.code);
 	}
-	printf("%u commands:\n", status.res.list.size);
-	for (unsigned int i = 0 ; i < status.res.list.size ; ++i)
-		printf("uid=%u\n", uid[i]);
 }
 
 int main(int argc, char *argv[])
@@ -60,8 +79,7 @@ int main(int argc, char *argv[])
 		perror("open");
 		exit(errno);
 	}
-	hello(fd);
-	list(fd);
+	sleep_cmd(fd);
 	close(fd);
 
 	return EXIT_SUCCESS;

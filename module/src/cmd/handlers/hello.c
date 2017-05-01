@@ -1,5 +1,4 @@
-#include <asm/uaccess.h>
-#include <cmd/def.h>
+#include <linux/printk.h>
 #include <cmd/protos.h>
 
 int cmd_hello_handler(struct cmd_hello_args *args, struct cmd_hello_res *res)
