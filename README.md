@@ -28,13 +28,19 @@ Implemented commands:
 
 ## Building
 
-Dependencies: GNU readline for the user program.
+Dependencies:
+- GNU readline for the user program.
+- Linux 4.2.3
 
 ```bash
-# build everything:
+# fetch kernel sources
+git submodule init
+git submodule update
+
+# or build everything:
 make
 
-# build the module:
+# or build the module:
 make module
 
 # build the user shell:
