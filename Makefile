@@ -14,7 +14,7 @@ module:
 	$(MAKE) -C $(MDIR) KDIR=$(KDIR) COMMON=$(COMMON)
 
 user:
-	$(MAKE) -C $(UDIR) KDIR=$(KDIR) MDIR=$(MDIR) COMMON=$(COMMON)
+	$(MAKE) -C $(UDIR) COMMON=$(COMMON)
 
 clean-module:
 	$(MAKE) -C $(MDIR) KDIR=$(KDIR) clean
