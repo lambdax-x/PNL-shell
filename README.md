@@ -37,13 +37,13 @@ Dependencies:
 git submodule init
 git submodule update
 
-# or build everything:
+# build everything:
 make
 
 # or build the module:
 make module
 
-# build the user shell:
+# or build the user shell:
 make user
 ```
 
