@@ -5,6 +5,11 @@
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
+//static DEFINE_MUTEX(works_lock);
+static struct mutex works_lock;
+LIST_HEAD(works_list);
+size_t works_count = 0;
+
 static inline workid_t atomic_next_uid(void)
 {
 	static int initialized = 0;
@@ -24,12 +29,14 @@ static inline workid_t atomic_next_uid(void)
 	return uid;
 }
 
-LIST_HEAD(works_list);
-size_t works_count = 0;
-DEFINE_MUTEX(works_lock);
-
 void lock_cmd_works()
 {
+	static int mutex_initialized = 0;
+	if (unlikely(!mutex_initialized)) {
+		mutex_init(&works_lock);
+		mutex_initialized = 1;
+	}
+		
 	mutex_lock(&works_lock);
 }
 
