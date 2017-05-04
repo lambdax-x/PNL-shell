@@ -20,6 +20,8 @@ Implemented commands:
 - list
 - fg
 - kill
+- meminfo
+- modinfo
 
 ## Documentation
 
