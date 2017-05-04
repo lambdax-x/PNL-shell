@@ -56,7 +56,6 @@ int cmd_modinfo_handler(struct cmd_modinfo_args *args,
 			                 goto error;
 			        }
 			}
-			res->code = 0;
 			return 0;
 		}
         }else{
@@ -64,7 +63,6 @@ int cmd_modinfo_handler(struct cmd_modinfo_args *args,
         }
   
 error:
-        res->code = -1;
         kfree(name_of_module);
-        return 0;
+        return -1;
 }

@@ -11,7 +11,7 @@ ccflags-y :=	-I$(M)/include						\
 
 obj-m := playground.o
 
-cmds := hello sleep list fg kill meminfo modinfo
+cmds := hello sleep list fg kill meminfo modinfo exec
 cmd-objs := $(addprefix src/cmd/handlers/,$(addsuffix .o,$(cmds)))
 
 playground-y :=	src/playground.o					\

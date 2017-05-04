@@ -44,10 +44,9 @@ void show_cmd_modinfo(const int code, const struct cmd_modinfo_res *res)
 		printf("error\n");
 		return;
 	}
-	if(res->code == 0){
-	       	printf("[MODINFO]\n");
-	        printf("%s",result);
-	}
+       	printf("[MODINFO]\n");
+       	printf("%s",result);
+
 	free(name);
 	free(result);
 }
