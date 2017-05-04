@@ -27,6 +27,15 @@ typedef unsigned int workid_t;
 	, _(struct work_infos *infos) _(size_t size)			\
 	,								\
 	)								\
+	CMD(modinfo							\
+	, _(char *name) _(int sizeName) _(char *result) _(int sizeRes)	\
+	, _(int code)	                                         	\
+	)								\
+									\
+	CMD(meminfo							\
+	, _(struct sysinfo *info) 					\
+	, _(int val)							\
+	)                                                               \
 									\
 	CMD(fg								\
 	, _(workid_t uid) _(struct cmd_status *status)			\

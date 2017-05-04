@@ -12,7 +12,7 @@ BIN=bin
 
 objs := shell.o utils/parse.o cmd/parse.o cmd/exec.o
 
-cmds := hello sleep list fg kill
+cmds := hello sleep list fg kill meminfo modinfo
 cmd-objs := $(addprefix cmd/handlers/,$(addsuffix .o, $(cmds)))
 
 .PHONY: mkdirs clean distclean
