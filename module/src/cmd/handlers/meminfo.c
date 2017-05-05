@@ -38,6 +38,7 @@ int cmd_meminfo_handler(struct cmd_meminfo_args *args, struct cmd_meminfo_res *r
 	
 	if(copy_to_user(args->info,tmp,sizeof(struct sysinfo)) != 0){
 		pr_debug("ERROR COPY");
+		res->val = -1;
 		return EFAULT;
 	}
 	
