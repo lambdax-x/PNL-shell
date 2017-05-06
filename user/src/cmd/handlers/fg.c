@@ -19,7 +19,7 @@ ssize_t parse_cmd_fg(const char line[],
 	}
 	count += read;
 
-	read = parse_int(line + count, n - count, &uid);
+	read = parse_uint(line + count, n - count, &uid);
 	if (read <= 0) {
 		pr_debug("int expected but '%s' found", line + count);
 		return -P_UNEXP_CHAR;

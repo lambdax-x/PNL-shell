@@ -32,11 +32,12 @@ static inline workid_t atomic_next_uid(void)
 void lock_cmd_works()
 {
 	static int mutex_initialized = 0;
+
 	if (unlikely(!mutex_initialized)) {
 		mutex_init(&works_lock);
 		mutex_initialized = 1;
 	}
-		
+
 	mutex_lock(&works_lock);
 }
 

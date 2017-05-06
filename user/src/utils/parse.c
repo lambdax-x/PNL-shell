@@ -75,6 +75,37 @@ ssize_t parse_int(const char line[], const size_t n, int *number)
 	ssize_t read;
 	unsigned int i;
 	int _number = 0, digit;
+	int sign;
+
+	if (n == 0)
+		return -P_UNEXP_END_OF_BUFFER;
+
+	read = parse_char(line, n, '-');
+	sign = read == 1 ? -1 : 1;
+
+	if (read == 1 && n < 2)
+		return -P_UNEXP_END_OF_BUFFER;
+
+	if (!is_digit(line[read]))
+		return -P_UNEXP_CHAR;
+
+	for (i = read ; i < n ; ++i) {
+		read = parse_digit(line + i, n - i, &digit);
+		if (read != 1)
+			break;
+		_number *= 10;
+		_number += digit;
+	}
+	*number = sign * _number;
+	return i;
+}
+
+ssize_t parse_uint(const char line[], const size_t n, unsigned int *number)
+{
+	ssize_t read;
+	unsigned int i;
+	unsigned int _number = 0;
+	int digit;
 
 	if (n == 0)
 		return -P_UNEXP_END_OF_BUFFER;

@@ -15,13 +15,12 @@
 #define DEVICE "/dev/playground"
 
 int open_io_dev();
-int close_io_dev(const int fd);
+void close_io_dev(const int fd);
 
 int main(int argc, char *argv[])
 {
 	__label__ _loop, _free, _out;
 	
-	enum cmd_type_t type;
 	struct cmd_params params;
 	struct cmd_status status;
 	ssize_t read;
@@ -84,7 +83,7 @@ int open_io_dev()
 	return fd;
 }
 
-int close_io_dev(const int fd)
+void close_io_dev(const int fd)
 {
 	if (close(fd) != 0) {
 		perror("close");

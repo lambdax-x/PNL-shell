@@ -12,11 +12,11 @@ ssize_t parse_cmd_sleep(const char line[],
 	read = parse_some_space(line, n);
 	if (read < 1) {
 		pr_debug("spaces expected but '%s' found", line);
-		-P_UNEXP_CHAR;
+		return -P_UNEXP_CHAR;
 	}
 	count += read;
 
-	read = parse_int(line + count, n - count, &args->seconds);
+	read = parse_uint(line + count, n - count, &args->seconds);
 	if (read < 1) {
 		pr_debug("int expected but '%s' found", line);
 		return -P_UNEXP_CHAR;

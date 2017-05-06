@@ -27,7 +27,7 @@
 	);								\
 	void SHOW_CMD(name)(const int code,				\
 				const struct CMD_RES(name) *res		\
-	);								\
+	);
 CMD_TABLE
 #undef CMD
 

@@ -18,7 +18,7 @@ ssize_t parse_cmd_kill(const char line[],
 	}
 	count += read;
 
-	read = parse_int(line + count, n - count, &signal);
+	read = parse_uint(line + count, n - count, (unsigned int *) &signal);
 	if (read <= 0) {
 		pr_debug("int expected but '%s' found", line + count);
 		return -P_UNEXP_CHAR;
@@ -32,7 +32,7 @@ ssize_t parse_cmd_kill(const char line[],
 	}
 	count += read;
 
-	read = parse_int(line + count, n - count, &pid);
+	read = parse_uint(line + count, n - count, (unsigned int *) &pid);
 	if (read <= 0) {
 		pr_debug("int expected but '%s' found", line + count);
 		return -P_UNEXP_CHAR;

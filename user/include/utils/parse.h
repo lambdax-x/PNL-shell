@@ -20,4 +20,6 @@ ssize_t parse_some_space(const char line[], const size_t n);
 
 ssize_t parse_int(const char line[], const size_t n, int *number);
 
+ssize_t parse_uint(const char line[], const size_t n, unsigned int *number);
+
 #endif
