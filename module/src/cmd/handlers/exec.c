@@ -18,13 +18,12 @@ int cmd_exec_handler(struct cmd_exec_args *args,
                 NULL
         };
         char *name;
-	
+
 	name = kmalloc(sizeof(char)*(args->sizeName), GFP_KERNEL);
 	if (copy_from_user(name, args->name, args->sizeName) != 0)
                 return -EFAULT;
-                
+
 	name[args->sizeName] = 0;
-	
 	pr_debug("name : %s\n",name);
 	char * argv[2];
 	argv[0] = name;
@@ -34,9 +33,9 @@ int cmd_exec_handler(struct cmd_exec_args *args,
                                                         ,NULL,NULL,NULL);
         if (!info)
                goto free_name;
-               
+
         return call_usermodehelper_exec(info, UMH_WAIT_PROC);
-        
+
 free_name:
         kfree(name);
         return -ENOMEM;

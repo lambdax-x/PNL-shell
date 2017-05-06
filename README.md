@@ -22,6 +22,7 @@ Implemented commands:
 - kill
 - meminfo
 - modinfo
+- exec
 
 ## Documentation
 

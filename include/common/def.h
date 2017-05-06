@@ -51,7 +51,13 @@ typedef unsigned int workid_t;
 	CMD(exec                                                        \
 	, _(char *name) _(int sizeName)                                 \
 	,                                                               \
-	)
+	)                                                               \
+	                                                                \
+	CMD(lsmod                                                       \
+	,                                                               \
+	,                                                               \
+	)                                                               
+	
 
 #define CMD_TYPE(name) cmd_ ## name
 /* Command identifier:
