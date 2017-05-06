@@ -13,7 +13,7 @@ This command is defined in `include/cmd/def.h`.
 
 ## Command execution
 
-Just type "kill <signal> <pid>" in the shell.
+Just type "kill signal pid" in the shell.
 
 ## Example of output : 
 

@@ -19,6 +19,7 @@ Just type "modinfo <name>" in the shell.
 
 ## Example of output : 
 
+```sh
 [root@vm-nmv ~]# insmod helloWorld.ko 
 [12250.384424] (0) Hello, default
 [root@vm-nmv ~]# ./shell 
@@ -32,4 +33,4 @@ number param   : 2
 param 0        : howmany
 param 1        : whom
 λ. 
-
+```

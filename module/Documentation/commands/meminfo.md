@@ -22,7 +22,7 @@ This command is defined in `include/cmd/def.h`.
 Just type "meminfo" in the shell.
 
 ## Example of output : 
-
+```sh
 λ. meminfo
 [MEMINFO] MemTotal:	   1012648 kB
 [MEMINFO] MemFree:	    922204 kB
@@ -32,3 +32,4 @@ Just type "meminfo" in the shell.
 [MEMINFO] SharedMem:	      6732 kB
 [MEMINFO] Memory unit:	     16384 kB
 λ. 
+```

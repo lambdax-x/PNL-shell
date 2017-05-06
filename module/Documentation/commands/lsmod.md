@@ -15,6 +15,7 @@ Just type "lsmod" in the shell.
 
 ## Example of output : 
 
+```sh
 λ. lsmod
 [ 1346.016263] Module		State	Version
 [ 1346.016402] playground	LIVE	1
@@ -22,4 +23,4 @@ Just type "lsmod" in the shell.
 [ 1346.016681] helloWorld	LIVE	(null)
 [ 1346.016801] hellosysfs	LIVE	(null)
 λ. 
-
+```

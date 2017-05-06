@@ -1,4 +1,4 @@
-# Command kill
+# Command exec
 
 Execute a user space program from the kernel space.
 
