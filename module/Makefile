@@ -6,8 +6,11 @@ ccflags-y :=	-I$(M)/include						\
 		-Werror							\
 		-Wno-declaration-after-statement			\
 		-Wno-strict-prototypes					\
-		-Wno-unused-function					\
-		-DDEBUG
+		-Wno-unused-function
+
+ifeq ($(DEBUG), 1)
+    ccflags-y += -DDEBUG
+endif
 
 obj-m := playground.o
 

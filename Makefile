@@ -4,21 +4,21 @@ UDIR = $(shell realpath user)
 COMMON = $(shell realpath include)
 
 MAKE-KERNEL=$(MAKE) -C $(KDIR)
-MAKE-MODULE=$(MAKE) -C $(MDIR) KDIR=$(KDIR) COMMON=$(COMMON)
-MAKE-USER=$(MAKE) -C $(UDIR) COMMON=$(COMMON)
+MAKE-MODULE=$(MAKE) -C $(MDIR) -e KDIR=$(KDIR) COMMON=$(COMMON) DEBUG=1
+MAKE-USER=$(MAKE) -C $(UDIR) -e COMMON=$(COMMON) DEBUG=1
 
 .PHONY: kernel module user clean clean-module clean-user distclean distclean-user
 
 all: module user
 
 kernel:
-	$(MAKE-KERNEL)
+	+ $(MAKE-KERNEL)
 
 module:
-	$(MAKE-MODULE)
+	+ $(MAKE-MODULE)
 
 user:
-	$(MAKE-USER)
+	+ $(MAKE-USER)
 
 clean: clean-module clean-user
 

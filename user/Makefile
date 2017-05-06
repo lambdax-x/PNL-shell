@@ -1,14 +1,15 @@
-CC=gcc
-CFLAGS=-std=gnu11							\
-       -g								\
-       -DDEBUG								\
-       -Iinclude							\
-       -I$(COMMON)
-LDFLAGS=-lreadline
+CC = gcc
 
-SRC=src
-OBJ=obj
-BIN=bin
+CFLAGS = -std=gnu11 -Iinclude -I$(COMMON)
+ifeq ($(DEBUG), 1)
+    CFLAGS += -g -DDEBUG
+endif
+
+LDFLAGS = -lreadline
+
+SRC = src
+OBJ = obj
+BIN = bin
 
 objs := shell.o utils/parse.o cmd/parse.o cmd/exec.o
 
