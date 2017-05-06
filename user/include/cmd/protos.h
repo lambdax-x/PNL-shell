@@ -25,7 +25,9 @@
 				const size_t n,				\
 				struct CMD_ARGS(name) *args		\
 	);								\
-	void SHOW_CMD(name)(const int code, const struct CMD_RES(name) *res);
+	void SHOW_CMD(name)(const int code,				\
+				const struct CMD_RES(name) *res		\
+	);								\
 CMD_TABLE
 #undef CMD
 
