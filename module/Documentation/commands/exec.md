@@ -16,6 +16,7 @@ Just type "exec <path>" in the shell.
 
 ## Example of output : 
 
+```sh
 [root@vm-nmv ~]# cat /tmp/log
 cat: /tmp/log: No such file or directory
 [root@vm-nmv ~]# cat test.sh 
@@ -26,6 +27,6 @@ echo "EXEC FROM KERNEL SPACE" > /tmp/log
 λ. 
 [root@vm-nmv ~]# cat /tmp/log 
 EXEC FROM KERNEL SPACE
-
+```
 
 

@@ -17,6 +17,7 @@ Just type "kill <signal> <pid>" in the shell.
 
 ## Example of output : 
 
+```sh
 [root@vm-nmv ~]# sleep 2000 &
 [1] 313
 [root@vm-nmv ~]# ./shell 
@@ -24,5 +25,6 @@ Just type "kill <signal> <pid>" in the shell.
 λ. 
 [1]+  Killed                  sleep 2000
 [root@vm-nmv ~]# 
+```
 
 
