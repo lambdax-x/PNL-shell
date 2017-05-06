@@ -1,5 +1,6 @@
 ## Example for list command
 
+```sh
 λ. sleep 20 &
 λ. sleep 25 &
 λ. list
@@ -8,13 +9,18 @@ uid	async	type	state
 19	true	sleep	running
 18	true	sleep	running
 λ. 
+```
 
 ## Example for fg command
 
+```sh
+soon
+```
 
 
 ## Example for kill command
 
+```sh
 [root@vm-nmv ~]# sleep 2000 &
 [1] 313
 [root@vm-nmv ~]# ./shell
@@ -22,14 +28,18 @@ uid	async	type	state
 λ.
 [1]+  Killed                  sleep 2000
 [root@vm-nmv ~]#
+```
 
 ## Example for wait command
 
-
+```sh
+soon
+```
 
 
 ## Example for meminfo command
 
+```sh
 λ. meminfo
 [MEMINFO] MemTotal:        1012648 kB
 [MEMINFO] MemFree:          922204 kB
@@ -39,9 +49,11 @@ uid	async	type	state
 [MEMINFO] SharedMem:          6732 kB
 [MEMINFO] Memory unit:       16384 kB
 λ.
+```
 
 ## Example for modinfo command
 
+```sh
 [root@vm-nmv ~]# insmod helloWorld.ko
 [12250.384424] (0) Hello, default
 [root@vm-nmv ~]# ./shell
@@ -55,9 +67,11 @@ number param   : 2
 param 0        : howmany
 param 1        : whom
 λ.
+```
 
 ## Example for sleep command
 
+```sh
 λ. sleep 1
 debug: command 'sleep' matched, parsing arguments...
 debug: parsing command 'sleep' succeed
@@ -68,9 +82,11 @@ debug: parsing command 'sleep' succeed
 [ 2413.102883] command 2 terminated
 [ 2413.103147] cleaning and freeing command 2
 λ. 
+```
 
 ## Example for lsmod command
 
+```sh
 λ. lsmod
 [ 1346.016263] Module           State   Version
 [ 1346.016402] playground       LIVE    1
@@ -78,9 +94,11 @@ debug: parsing command 'sleep' succeed
 [ 1346.016681] helloWorld       LIVE    (null)
 [ 1346.016801] hellosysfs       LIVE    (null)
 λ.
+```
 
 ## Example for exec command
 
+```sh
 [root@vm-nmv ~]# cat /tmp/log
 cat: /tmp/log: No such file or directory
 [root@vm-nmv ~]# cat test.sh
@@ -91,4 +109,4 @@ echo "EXEC FROM KERNEL SPACE" > /tmp/log
 λ.
 [root@vm-nmv ~]# cat /tmp/log
 EXEC FROM KERNEL SPACE
-
+```
