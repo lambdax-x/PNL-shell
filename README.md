@@ -23,6 +23,7 @@ Implemented commands:
 - meminfo
 - modinfo
 - exec
+- lsmod
 
 ## Documentation
 
