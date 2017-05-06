@@ -27,7 +27,7 @@ int cmd_lsmod_handler(struct cmd_lsmod_args *args,
 		mod->version);
 
 	list_for_each_entry_reverse(tmp, &mod->list,list){
-		if( &tmp->name != NULL && strlen(tmp->name) > 1 ){
+		if( &tmp->name != NULL && tmp->name[0] != 1 ){
 			pr_debug("%s	%s	%s\n",
 				tmp->name,
 				tmp_enum[tmp->state],
