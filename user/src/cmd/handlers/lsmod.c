@@ -13,3 +13,12 @@ ssize_t parse_cmd_lsmod(const char line[],
 void show_cmd_lsmod(const int code, const struct cmd_lsmod_res *res)
 {
 }
+
+void show_cmd_lsmod_usage()
+{
+	printf("lsmod\n");
+}
+
+void show_cmd_lsmod_help()
+{
+}

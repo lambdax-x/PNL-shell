@@ -59,3 +59,18 @@ make user
 It will produce:
 - the module: `module/playground.ko`
 - the shell: `user/bin/shell`
+
+## Usage
+
+As a privileged user:
+
+```bash
+insmod module/playground.ko
+```
+
+As a normal user:
+
+```bash
+user/bin/shell
+λ. help
+```

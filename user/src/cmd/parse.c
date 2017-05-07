@@ -3,13 +3,12 @@
 #include <cmd/parse.h>
 #include <cmd/protos.h>
 
-#define _PARSE_FAILED_LABEL(name) _parse_failed_cmd_ ## name
-
 ssize_t parse_command(const char line[],
 			const size_t n,
 			struct cmd_params *params
 )
 {
+#define _PARSE_FAILED_LABEL(name) _parse_failed_cmd_ ## name
 #define CMD(name, in, out)						\
 	__label__ _PARSE_FAILED_LABEL(name);
 	CMD_TABLE

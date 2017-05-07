@@ -53,3 +53,12 @@ _parsed:
 void show_cmd_wait(const int code, const struct cmd_wait_res *res)
 {
 }
+
+void show_cmd_wait_usage()
+{
+	printf("wait PID [PID ...]\n");
+}
+
+void show_cmd_wait_help()
+{
+}

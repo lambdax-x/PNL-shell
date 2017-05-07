@@ -66,3 +66,13 @@ static inline void pr_work(struct work_infos *infos)
 
 	printf("\n");
 }
+
+void show_cmd_list_usage()
+{
+	printf("list\n");
+}
+
+void show_cmd_list_help()
+{
+	printf("Display status of commands.\n");
+}

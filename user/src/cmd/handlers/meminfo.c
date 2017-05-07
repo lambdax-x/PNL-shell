@@ -30,3 +30,12 @@ void show_cmd_meminfo(const int code, const struct cmd_meminfo_res *res)
 		pr_error("meminfo error");
 	}
 }
+
+void show_cmd_meminfo_usage()
+{
+	printf("meminfo\n");
+}
+
+void show_cmd_meminfo_help()
+{
+}
