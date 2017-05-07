@@ -25,7 +25,7 @@ ssize_t parse_cmd_kill(const char line[],
 	}
 	count += read;
 
-	read = parse_some_space(line, n);
+	read = parse_some_space(line + count, n - count);
 	if (read < 1) {
 		pr_debug("spaces expected but '%s' found", line + count);
 		return -P_UNEXP_CHAR;

@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 enum parse_error_t {
+	P_ZERO = 0,
 	P_UNEXP_END_OF_BUFFER,
 	P_UNEXP_CHAR
 };
