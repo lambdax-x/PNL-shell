@@ -25,6 +25,10 @@ Implemented commands:
 - fg
 - kill
 - wait
+- meminfo
+- modinfo
+- exec
+- lsmod
 
 ## Documentation
 

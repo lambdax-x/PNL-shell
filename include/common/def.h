@@ -27,12 +27,20 @@ typedef unsigned int workid_t;
 	, _(struct work_infos *infos) _(size_t size)			\
 	,								\
 	)								\
+	CMD(modinfo							\
+	, _(char *name) _(int sizeName) _(char *result) _(int sizeRes)	\
+	,       	                                         	\
+	)								\
+									\
+	CMD(meminfo							\
+	, _(struct sysinfo *info) 					\
+	, _(int val)							\
+	)                                                               \
 									\
 	CMD(fg								\
 	, _(workid_t uid) _(struct cmd_status *status)			\
 	, _(int code)							\
 	)								\
-									\
 									\
 	CMD(kill							\
 	, _(int signal) _(pid_t pid)					\
@@ -42,8 +50,17 @@ typedef unsigned int workid_t;
 	CMD(wait							\
 	, _(pid_t *pid) _(size_t n)					\
 	,								\
-	)
-
+	)								\
+	                                                                \
+	CMD(exec                                                        \
+	, _(char *name) _(int sizeName)                                 \
+	,                                                               \
+	)                                                               \
+	                                                                \
+	CMD(lsmod                                                       \
+	,                                                               \
+	,                                                               \
+	)                                                               
 
 #define CMD_TYPE(name) cmd_ ## name
 /* Command identifier:
