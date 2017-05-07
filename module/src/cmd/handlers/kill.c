@@ -1,5 +1,4 @@
 #include <linux/sched.h>
-#include <asm/uaccess.h>
 #include <common/def.h>
 #include <cmd/protos.h>
 

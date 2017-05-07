@@ -1,24 +1,24 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
-//static DEFINE_MUTEX(works_lock);
 static struct mutex works_lock;
 LIST_HEAD(works_list);
-size_t works_count = 0;
+size_t works_count;
 
 static inline workid_t atomic_next_uid(void)
 {
-	static int initialized = 0;
-	static workid_t next_uid = 0;
+	static int initialized;
+	static workid_t next_uid;
 	static struct mutex uid_lock;
 	workid_t uid;
 
 	if (unlikely(!initialized)) {
 		mutex_init(&uid_lock);
+		next_uid = 0;
 		initialized = 1;
 	}
 
@@ -29,9 +29,9 @@ static inline workid_t atomic_next_uid(void)
 	return uid;
 }
 
-void lock_cmd_works()
+void lock_cmd_works(void)
 {
-	static int mutex_initialized = 0;
+	static int mutex_initialized;
 
 	if (unlikely(!mutex_initialized)) {
 		mutex_init(&works_lock);
@@ -41,7 +41,7 @@ void lock_cmd_works()
 	mutex_lock(&works_lock);
 }
 
-void unlock_cmd_works()
+void unlock_cmd_works(void)
 {
 	mutex_unlock(&works_lock);
 }
@@ -58,6 +58,7 @@ static inline void insert_work(struct cmd_work *work)
 static inline void clean_work_unsafe(struct kref *kref)
 {
 	struct cmd_work *work = container_of(kref, struct cmd_work, cleaners);
+
 	pr_debug("cleaning and freeing command %u\n", work->uid);
 	list_del(&work->list);
 	works_count--;
@@ -67,6 +68,7 @@ static inline void clean_work_unsafe(struct kref *kref)
 struct cmd_work *find_cmd_work_unsafe(const workid_t uid)
 {
 	struct cmd_work *work;
+
 	list_for_each_entry(work, &works_list, list)
 		if (work->uid == uid)
 			return work;
@@ -136,14 +138,14 @@ int schedule_cmd_work(const struct cmd_params *user_params_addr)
 
 	switch (work->params.type) {
 #define CMD(name, in, out)						\
-		case CMD_TYPE(name):					\
-			INIT_WORK(&work->ws, _CMD_HANDLER(name));	\
-			break;
-		CMD_TABLE
+	case CMD_TYPE(name):						\
+		INIT_WORK(&work->ws, _CMD_HANDLER(name));		\
+		break;
+	CMD_TABLE
 #undef CMD
-		default:
-			kfree(work);
-			return -EINVAL;
+	default:
+		kfree(work);
+		return -EINVAL;
 	}
 
 	work->uid = atomic_next_uid();

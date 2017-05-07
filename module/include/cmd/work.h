@@ -26,8 +26,8 @@ extern size_t works_count;
 
 int schedule_cmd_work(const struct cmd_params *user_params_addr);
 
-void lock_cmd_works();
-void unlock_cmd_works();
+void lock_cmd_works(void);
+void unlock_cmd_works(void);
 
 struct cmd_work *find_cmd_work_unsafe(const workid_t uid);
 

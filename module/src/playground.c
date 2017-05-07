@@ -7,7 +7,7 @@
 #define DEV_MAJOR 0
 #define DEV_NAME "playground"
 
-struct file_operations f_ops = {
+const struct file_operations f_ops = {
 	.unlocked_ioctl = ioc
 };
 
@@ -19,7 +19,7 @@ static int __init playground_init(void)
 
 	pr_debug("playground module initialization\n");
 
-	r = register_chrdev(DEV_MAJOR, DEV_NAME, &f_ops);	
+	r = register_chrdev(DEV_MAJOR, DEV_NAME, &f_ops);
 	if (r < 0) {
 		pr_err("register_chrdev failed with code %d\n", r);
 		return r;

@@ -1,4 +1,4 @@
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <common/def.h>
 #include <common/work.h>
 #include <cmd/protos.h>

@@ -6,6 +6,7 @@
 long ioc(struct file *file, unsigned int seq, unsigned long addr)
 {
 	struct cmd_params *params;
+
 	params = (struct cmd_params *) addr;
 	return schedule_cmd_work(params);
 }
