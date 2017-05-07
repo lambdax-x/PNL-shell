@@ -36,3 +36,13 @@ void show_cmd_hello(const int code, const struct cmd_hello_res *res)
 	else
 		pr_error("oops, something went wrong");
 }
+
+void show_cmd_hello_usage()
+{
+	printf("hello number\n");
+}
+
+void show_cmd_hello_help()
+{
+	printf("hello world\n");
+}

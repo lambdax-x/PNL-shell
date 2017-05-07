@@ -29,3 +29,12 @@ ssize_t parse_cmd_sleep(const char line[],
 void show_cmd_sleep(const int code, const struct cmd_sleep_res *res)
 {
 }
+
+void show_cmd_sleep_usage()
+{
+	printf("sleep SECONDS\n");
+}
+
+void show_cmd_sleep_help()
+{
+}

@@ -14,7 +14,7 @@ SRC = src
 OBJ = obj
 BIN = bin
 
-objs := shell.o utils/parse.o cmd/parse.o cmd/exec.o
+objs := shell.o utils/parse.o cmd/builtins.o cmd/parse.o cmd/exec.o
 
 cmds := hello sleep list fg kill wait meminfo modinfo exec lsmod
 cmd-objs := $(addprefix cmd/handlers/,$(addsuffix .o, $(cmds)))

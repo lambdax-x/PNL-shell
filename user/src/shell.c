@@ -9,6 +9,7 @@
 #include <utils/io.h>
 #include <utils/parse.h>
 #include <cmd/parse.h>
+#include <cmd/builtins.h>
 #include <cmd/exec.h>
 
 #define PROMPT "λ. "
@@ -41,12 +42,11 @@ _loop:
 		goto _free;
 	add_history(line);
 	count = 0;
-	
-	if(!strcmp(line,"help")){
-	       help();
-	       goto _free;
-	}
 
+	read = parse_exec_builtin(line, length);
+	if (read > 0)
+		goto _free;
+	
 	params.asynchronous = 0;
 	read = parse_command(line, length, &params);
 	if (read <= 0) {

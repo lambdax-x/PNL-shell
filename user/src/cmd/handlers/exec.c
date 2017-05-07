@@ -37,3 +37,13 @@ void show_cmd_exec(const int code, const struct cmd_exec_res *res)
 {
 	free(name);
 }
+
+void show_cmd_exec_usage()
+{
+	printf("exec command [arguments]\n");
+}
+
+void show_cmd_exec_help()
+{
+	printf("Execute a program.\n");
+}

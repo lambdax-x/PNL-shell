@@ -18,8 +18,19 @@
  * void show_cmd_"name"(const int code, struct cmd_"name"_res *res);
  */
 
+/* Show the usage of the "name" command:
+ * void show_cmd_"name"_usage();
+ */
+
+
+/* Show the help of the "name" command:
+ * void show_cmd_"name"_help();
+ */
+
 #define PARSE_CMD(name) parse_cmd_ ## name
 #define SHOW_CMD(name) show_cmd_ ## name
+#define SHOW_CMD_USAGE(name) show_cmd_ ## name ## _usage
+#define SHOW_CMD_HELP(name) show_cmd_ ## name ## _help
 #define CMD(name, in, out)						\
 	ssize_t PARSE_CMD(name)(const char line[],			\
 				const size_t n,				\
@@ -27,7 +38,9 @@
 	);								\
 	void SHOW_CMD(name)(const int code,				\
 				const struct CMD_RES(name) *res		\
-	);
+	);								\
+	void SHOW_CMD_USAGE(name)();					\
+	void SHOW_CMD_HELP(name)();
 CMD_TABLE
 #undef CMD
 

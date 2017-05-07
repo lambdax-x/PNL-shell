@@ -50,3 +50,13 @@ void show_cmd_kill(const int code, const struct cmd_kill_res *res)
 	if (code != 0)
 		pr_error("no such pid");
 }
+
+void show_cmd_kill_usage()
+{
+	printf("kill SIGNAL PID\n");
+}
+
+void show_cmd_kill_help()
+{
+	printf("Send SIGNAL to PID.\n");
+}

@@ -39,3 +39,13 @@ void show_cmd_fg(const int code, const struct cmd_fg_res *res)
 		return;
 	}
 }
+
+void show_cmd_fg_usage()
+{
+	printf("fg cmdid\n");
+}
+
+void show_cmd_fg_help()
+{
+	printf("Move command to the foreground.\n");
+}

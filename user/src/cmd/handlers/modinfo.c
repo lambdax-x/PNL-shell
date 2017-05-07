@@ -49,3 +49,12 @@ void show_cmd_modinfo(const int code, const struct cmd_modinfo_res *res)
 	free(name);
 	free(result);
 }
+
+void show_cmd_modinfo_usage()
+{
+	printf("modinfo MODULE_NAME\n");
+}
+
+void show_cmd_modinfo_help()
+{
+}
