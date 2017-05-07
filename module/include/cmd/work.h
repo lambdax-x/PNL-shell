@@ -3,7 +3,6 @@
 
 #include <linux/workqueue.h>
 #include <linux/wait.h>
-#include <linux/kref.h>
 #include <common/def.h>
 #include <common/work.h>
 
@@ -19,7 +18,7 @@ struct cmd_work {
 
 	struct list_head list;
 
-	struct kref cleaners;
+	atomic_t cleaners;
 };
 extern struct list_head works_list;
 extern size_t works_count;

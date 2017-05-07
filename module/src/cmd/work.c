@@ -57,10 +57,8 @@ static inline void insert_work(struct cmd_work *work)
 	pr_debug("command %u inserted\n", work->uid);
 }
 
-static inline void clean_work_unsafe(struct kref *kref)
+static inline void clean_work_unsafe(struct cmd_work *work)
 {
-	struct cmd_work *work = container_of(kref, struct cmd_work, cleaners);
-
 	pr_debug("cleaning and freeing command %u\n", work->uid);
 	list_del(&work->list);
 	works_count--;
@@ -86,12 +84,13 @@ void flush_cmd_work(struct cmd_work *work)
 
 void register_cmd_work_cleaner_unsafe(struct cmd_work *work)
 {
-	kref_get(&work->cleaners);
+	atomic_inc(&work->cleaners);
 }
 
 void unregister_cmd_work_cleaner_unsafe(struct cmd_work *work)
 {
-	kref_put(&work->cleaners, clean_work_unsafe);
+	if (atomic_sub_and_test(1, &work->cleaners))
+		clean_work_unsafe(work);
 }
 
 /* void _cmd_"name"_handler(struct work_struct *ws)
@@ -178,10 +177,11 @@ int schedule_cmd_work(const struct cmd_params *user_params_addr)
 	work->uid = atomic_next_uid();
 	work->state = work_registered;
 	init_waitqueue_head(&work->wq_state);
+
 	if (work->params.asynchronous)
-		atomic_set(&work->cleaners.refcount, 0);
+		atomic_set(&work->cleaners, 0);
 	else
-		kref_init(&work->cleaners);
+		atomic_set(&work->cleaners, 1);
 
 	insert_work(work);
 	schedule_work(&work->ws);
