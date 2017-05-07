@@ -1,9 +1,13 @@
-# Do no use this Linux module
+# You shall not use this Linux module
 
 ## About this project
 
 Linux kernel programming project at UPMC. The goal is to schedule "commands" in
 the kernel, from userspace.
+
+### License
+
+This project has been contaminated by the GPL.
 
 ## Features
 
@@ -20,17 +24,18 @@ Implemented commands:
 - list
 - fg
 - kill
+- wait
 
 ## Documentation
 
-- commands explained: module/Documentation/commands.md
-- implemented commands are described in module/Documentation/commands/
+- [commands explained](module/Documentation/commands.md)
+- [commands' documentation](module/Documentation/commands/)
 
 ## Building
 
 Dependencies:
 - GNU readline for the user program.
-- Linux 4.2.3
+- Linux 4.2.3 patched (submodule)
 
 ```bash
 # fetch kernel sources

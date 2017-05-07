@@ -1,6 +1,9 @@
 CC = gcc
 
-CFLAGS = -std=gnu11 -Iinclude -I$(COMMON)
+CFLAGS =	-std=gnu11						\
+		-Wall -Werror						\
+		-Iinclude						\
+		-I$(COMMON)
 ifeq ($(DEBUG), 1)
     CFLAGS += -g -DDEBUG
 endif
@@ -13,7 +16,7 @@ BIN = bin
 
 objs := shell.o utils/parse.o cmd/parse.o cmd/exec.o
 
-cmds := hello sleep list fg kill
+cmds := hello sleep list fg kill wait
 cmd-objs := $(addprefix cmd/handlers/,$(addsuffix .o, $(cmds)))
 
 .PHONY: mkdirs clean distclean

@@ -30,14 +30,20 @@ typedef unsigned int workid_t;
 									\
 	CMD(fg								\
 	, _(workid_t uid) _(struct cmd_status *status)			\
-	, _(int code)				\
+	, _(int code)							\
 	)								\
 									\
 									\
 	CMD(kill							\
 	, _(int signal) _(pid_t pid)					\
 	,								\
+	)								\
+									\
+	CMD(wait							\
+	, _(pid_t *pid) _(size_t n)					\
+	,								\
 	)
+
 
 #define CMD_TYPE(name) cmd_ ## name
 /* Command identifier:

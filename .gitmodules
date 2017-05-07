@@ -1,3 +1,4 @@
 [submodule "linux-stable"]
 	path = linux-stable
-	url = https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+	url = https://github.com/lambdax-x/PNL-shell-kernel.git
+	branch = pnl-patch

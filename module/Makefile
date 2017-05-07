@@ -14,7 +14,7 @@ endif
 
 obj-m := playground.o
 
-cmds := hello sleep list fg kill
+cmds := hello sleep list fg kill wait
 cmd-objs := $(addprefix src/cmd/handlers/,$(addsuffix .o,$(cmds)))
 
 playground-y :=	src/playground.o					\
