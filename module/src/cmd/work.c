@@ -5,7 +5,9 @@
 #include <cmd/work.h>
 #include <cmd/protos.h>
 
+static struct kmem_cache *cmd_work_memcache;
 static struct mutex works_lock;
+
 LIST_HEAD(works_list);
 size_t works_count;
 
@@ -62,7 +64,7 @@ static inline void clean_work_unsafe(struct kref *kref)
 	pr_debug("cleaning and freeing command %u\n", work->uid);
 	list_del(&work->list);
 	works_count--;
-	kfree(work);
+	free_cmd_work(work);
 }
 
 struct cmd_work *find_cmd_work_unsafe(const workid_t uid)
@@ -122,17 +124,42 @@ static void _CMD_HANDLER(name)(struct work_struct *ws)			\
 CMD_TABLE
 #undef CMD
 
+static inline void init_cmd_work_allocator(void)
+{
+	cmd_work_memcache = KMEM_CACHE(cmd_work, 0);
+}
+
+void destroy_cmd_works(void)
+{
+}
+
+struct cmd_work *alloc_cmd_work(void)
+{
+	return kmem_cache_alloc(cmd_work_memcache, 0);
+}
+
+void free_cmd_work(struct cmd_work *work)
+{
+	kmem_cache_free(cmd_work_memcache, work);
+}
+
 int schedule_cmd_work(const struct cmd_params *user_params_addr)
 {
+	static int initialized;
 	struct cmd_work *work;
 
-	work = kmalloc(sizeof(struct cmd_work), 0);
+	if (unlikely(!initialized)) {
+		init_cmd_work_allocator();
+		initialized = 1;
+	}
+
+	work = alloc_cmd_work();
 	if (!work)
 		return -ENOMEM;
 
 	if (copy_from_user(&work->params, user_params_addr,
 				sizeof(struct cmd_params))) {
-		kfree(work);
+		free_cmd_work(work);
 		return -EFAULT;
 	}
 
@@ -144,7 +171,7 @@ int schedule_cmd_work(const struct cmd_params *user_params_addr)
 	CMD_TABLE
 #undef CMD
 	default:
-		kfree(work);
+		free_cmd_work(work);
 		return -EINVAL;
 	}
 

@@ -14,7 +14,7 @@ This project has been contaminated by the GPL.
 - [x] generic implementation of commands (see documentation)
 - [x] synchronous execution using wait queues
 - [x] asynchronous execution
-- [ ] slab allocator
+- [x] slab allocator for works
 - [x] user program (shell) interfacing the module
 
 Implemented commands:

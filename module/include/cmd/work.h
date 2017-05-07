@@ -24,6 +24,10 @@ struct cmd_work {
 extern struct list_head works_list;
 extern size_t works_count;
 
+void destroy_cmd_works(void);
+struct cmd_work *alloc_cmd_work(void);
+void free_cmd_work(struct cmd_work *work);
+
 int schedule_cmd_work(const struct cmd_params *user_params_addr);
 
 void lock_cmd_works(void);
