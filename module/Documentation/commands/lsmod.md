@@ -9,9 +9,9 @@ This command is defined in `include/cmd/def.h`.
 - input : nothing
 - output : nothing
 
-## Command execution
+## Execution
 
-Just type "lsmod" in the shell.
+lsmod
 
 ## Example of output : 
 

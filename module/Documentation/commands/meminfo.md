@@ -13,15 +13,14 @@ Memory unit: Memory unit size in kB.
 
 ## Definition of the command
 
-This command is defined in `include/cmd/def.h`.
-- input : a sysinfo pointer
-- output : return value of the command
+- input: a sysinfo pointer
+- output: return value of the command
 
-## Command execution
+## Execution
 
-Just type "meminfo" in the shell.
+meminfo
 
-## Example of output : 
+## Example of output
 ```sh
 λ. meminfo
 [MEMINFO] MemTotal:	   1012648 kB

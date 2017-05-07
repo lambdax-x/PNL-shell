@@ -5,19 +5,18 @@ By default this command lists each attribute of the module in form "param x : va
 
 ## Definition of the command
 
-This command is defined in `include/cmd/def.h`.
-- input : 
+- input: 
 	- a char pointer that represents the name of the module. 
 	- size of this name.
 	- a char pointer for the result.
 	- the size of this result.
-- output : return value of the command.
+- output: return value of the command.
 
-## Command execution
+## Execution
 
-Just type "modinfo <name>" in the shell.
+modinfo NAME
 
-## Example of output : 
+## Example of output
 
 ```sh
 [root@vm-nmv ~]# insmod helloWorld.ko 

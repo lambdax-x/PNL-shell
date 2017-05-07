@@ -4,17 +4,16 @@ Execute a user space program from the kernel space.
 
 ## Definition of the command
 
-This command is defined in `include/cmd/def.h`.
-- input : 
+- input: 
 	- a char pointer that represents the absolute path of the program
 	- size of this path.
-- output : nothing.
+- output: nothing.
 
-## Command execution
+## Execution
 
-Just type "exec <path>" in the shell.
+exec PATH
 
-## Example of output : 
+## Example of output
 
 ```sh
 [root@vm-nmv ~]# cat /tmp/log
@@ -28,5 +27,3 @@ echo "EXEC FROM KERNEL SPACE" > /tmp/log
 [root@vm-nmv ~]# cat /tmp/log 
 EXEC FROM KERNEL SPACE
 ```
-
-
