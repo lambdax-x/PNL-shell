@@ -22,15 +22,15 @@ int exec_cmd(const int fd, const struct cmd_params *params)
 
 	switch (params->type) {
 #define CMD(name, in, out)						\
-		case CMD_TYPE(name):					\
-			SHOW_CMD(name)(params->status->code,		\
-					&params->status->res.name	\
-			);						\
-			break;
-		CMD_TABLE
+	case CMD_TYPE(name):						\
+		SHOW_CMD(name)(params->status->code,			\
+				&params->status->res.name		\
+		);							\
+		break;
+	CMD_TABLE
 #undef CMD
-		default:
-			pr_error("something went wrong");
+	default :
+		pr_error("something went wrong");
 	}
 
 	return 0;

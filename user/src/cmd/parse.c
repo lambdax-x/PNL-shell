@@ -29,7 +29,7 @@ ssize_t parse_command(const char line[],
 		return 0;
 
 #define CMD(name, in, out)						\
-	read = parse_string(line + count, remaining, #name );		\
+	read = parse_string(line + count, remaining, #name);		\
 	if (read <= 0)							\
 		goto _PARSE_FAILED_LABEL(name);				\
 	count += read;							\
@@ -47,7 +47,7 @@ ssize_t parse_command(const char line[],
 	params->type = CMD_TYPE(name);					\
 	pr_debug("parsing command '" #name "' succeed");		\
 	goto _success;							\
-_PARSE_FAILED_LABEL(name):
+_PARSE_FAILED_LABEL(name) :
 	CMD_TABLE
 #undef CMD
 

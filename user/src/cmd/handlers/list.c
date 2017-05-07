@@ -8,8 +8,8 @@
 struct work_infos infos[SIZE];
 
 ssize_t parse_cmd_list(const char line[],
-			const size_t n,
-			struct cmd_list_args *args)
+		const size_t n,
+		struct cmd_list_args *args)
 {
 	args->infos = infos;
 	args->size = SIZE;
@@ -43,25 +43,25 @@ static inline void pr_work(struct work_infos *infos)
 
 	switch (infos->type) {
 #define CMD(name, in, out)						\
-		case CMD_TYPE(name):					\
-			printf(#name "\t");				\
-			break;
-		CMD_TABLE
+	case CMD_TYPE(name):						\
+		printf(#name "\t");					\
+		break;
+	CMD_TABLE
 #undef CMD
-		default:
-			printf("-\t");
+	default :
+		printf("-\t");
 	}
 
 	switch (infos->state) {
-		case work_registered:
-			printf("registered");
-			break;
-		case work_running:
-			printf("running");
-			break;
-		case work_terminated:
-			printf("terminated");
-			break;
+	case work_registered:
+		printf("registered");
+		break;
+	case work_running:
+		printf("running");
+		break;
+	case work_terminated:
+		printf("terminated");
+		break;
 	}
 
 	printf("\n");

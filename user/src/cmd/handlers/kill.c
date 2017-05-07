@@ -38,7 +38,7 @@ ssize_t parse_cmd_kill(const char line[],
 		return -P_UNEXP_CHAR;
 	}
 	count += read;
-	
+
 	args->signal = signal;
 	args->pid = pid;
 

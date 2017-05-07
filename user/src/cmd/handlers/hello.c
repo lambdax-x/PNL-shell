@@ -23,7 +23,7 @@ ssize_t parse_cmd_hello(const char line[],
 		return -P_UNEXP_CHAR;
 	}
 	count += read;
-	
+
 	args->val = a;
 
 	return count;
