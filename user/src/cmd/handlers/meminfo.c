@@ -24,7 +24,7 @@ void show_cmd_meminfo(const int code, const struct cmd_meminfo_res *res)
 		printf("[MEMINFO] SwapTotal:	  %8lu kB\n", info.totalswap);
 		printf("[MEMINFO] SwapFree:	  %8lu kB\n", info.freeswap);
 		printf("[MEMINFO] SharedMem:	  %8lu kB\n", info.sharedram);
-		printf("[MEMINFO] Memory unit:	  %8lu kB\n", info.mem_unit);
+		printf("[MEMINFO] Memory unit:	  %8u kB\n", info.mem_unit);
 	}else
 	        pr_error("meminfo error");
 	
