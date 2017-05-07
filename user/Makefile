@@ -24,7 +24,8 @@ cmd-objs := $(addprefix cmd/handlers/,$(addsuffix .o, $(cmds)))
 all: mkdirs $(BIN)/shell
 
 mkdirs:
-	- mkdir -p $(OBJ)/{utils,cmd/handlers} $(BIN)
+	- mkdir -p $(OBJ)/utils $(BIN)
+	- mkdir -p $(OBJ)/cmd/handlers $(BIN)
 
 $(BIN)/shell: $(addprefix $(OBJ)/,$(objs) $(cmd-objs))
 	$(CC) -o $@ $^ $(LDFLAGS)
