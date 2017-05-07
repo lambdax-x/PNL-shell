@@ -32,8 +32,8 @@ Implemented commands:
 
 ## Documentation
 
-- [commands explained](module/Documentation/commands.md)
-- [commands' documentation](module/Documentation/commands/)
+- [commands explained](Documentation/commands.md)
+- [commands' documentation](Documentation/commands/)
 
 ## Building
 
