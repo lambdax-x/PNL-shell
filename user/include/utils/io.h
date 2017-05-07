@@ -6,7 +6,7 @@
 #ifdef DEBUG
 #define pr_debug(str, ...) fprintf(stderr, "debug: " str "\n", ##__VA_ARGS__)
 #else
-#define pr_debug
+#define pr_debug(str, ...)
 #endif
 
 #define pr_error(str, ...) fprintf(stderr, "error: " str "\n", ##__VA_ARGS__)
