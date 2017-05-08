@@ -188,7 +188,7 @@ int schedule_cmd_work(const struct cmd_params *user_params_addr)
 
 	if (work->params.asynchronous)
 		return 0;
-	
+
 	flush_cmd_work(work);
 	if (work->params.status != NULL) {
 		copy_to_user(work->params.status,

@@ -56,7 +56,7 @@ int cmd_modinfo_handler(struct cmd_modinfo_args *args,
 			for (int i = 0 ; i < mod->num_kp ; i++) {
 				scnprintf(tmp,
 						512,
-						"%s" "param %d        : %s\n",
+						"%s param %d        : %s\n",
 						tmp,
 						i,
 						mod->kp[i].name
