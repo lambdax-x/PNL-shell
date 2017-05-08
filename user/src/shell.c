@@ -17,7 +17,6 @@
 
 int open_io_dev();
 void close_io_dev(const int fd);
-void help();
 
 int main(int argc, char *argv[])
 {
@@ -95,14 +94,4 @@ void close_io_dev(const int fd)
 		perror("close");
 		exit(errno);
 	}
-}
-
-void help(){
-        printf("LIST \n\tDisplay ids of running processes\n");
-        printf("FG <id>\n\tBring process <id> in foreground\n");
-        printf("KILL <signal> <pid>\n\tSend a signal <signal> to process <pid>\n");
-        printf("WAIT <pid> [<pid> ...]\n\tWait until one of the processes finishes\n");
-        printf("MEMINFO\n\tShows the memory state and usage\n");
-        printf("MODINFO <name>\n\tShow information about the module <name>\n");
-        printf("EXEC <path> \n\tExecute a user space program from the kernel space\n\n");
 }
